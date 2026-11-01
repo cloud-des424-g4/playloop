@@ -39,6 +39,20 @@ npm run services:down
 
 Run the server tests with `npm test`.
 
+## Seed demo data (local MongoDB or Atlas)
+
+Set `MONGODB_URI` in `server/.env` to the database you want to seed, then run from the repo root:
+
+```sh
+npm run seed
+```
+
+This loads `server/.env` and inserts three regular demo accounts, two published sample game listings, and default app configuration if missing. It preserves existing records, passwords, and edits; rerunning does not duplicate seed records. Demo seeding is disabled for `NODE_ENV=production`.
+
+Accounts: `developer@seed.example.com`, `creator@seed.example.com`, and `tester@seed.example.com`. A random password is printed for newly created accounts; save it to log in using the API. Optionally set `SEED_PASSWORD` in `server/.env` (at least 12 characters, at most 72 bytes) before the first run. Rerunning does not reset passwords. No admin accounts are created.
+
+Games contain placeholder URLs (`https://example.com`) and no uploaded images or playable builds. Replace those through the normal game workflow when real assets are available. Reviews are not seeded. The script writes to the database selected by `MONGODB_URI`; include `/playloop` before the connection string's `?` if that is your intended database. Do not commit `.env` or demo passwords.
+
 ## View the API docs
 
 Start the API with `npm run dev`, then open http://localhost:4000/api/docs in a browser. That page is Swagger UI: each endpoint can be expanded and tried from there.
