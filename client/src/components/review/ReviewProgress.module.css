@@ -17,7 +17,7 @@
 }
 
 .reached {
-  background: var(--playloop-accent-orange);
+  background: var(--theme-accent, var(--playloop-accent-orange));
 }
 
 .label {

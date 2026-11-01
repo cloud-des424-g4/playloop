@@ -1,7 +1,9 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { Button, Playtime } from '../../components/index.js';
+import { usePageLook } from '../../components/layout/pageLook.js';
 import { api } from '../../lib/api.js';
+import { themeLook } from '../games/gameTheme.js';
 import { RequestState } from '../shared/FeatureUI.jsx';
 import featureStyles from '../shared/Features.module.css';
 import { FinalVerdictStep } from './FinalVerdictStep.jsx';
@@ -92,6 +94,10 @@ function ReviewFlow({ initial, gameId }) {
   const [leaving, setLeaving] = useState(false);
 
   const { id, form } = review;
+  // The game's theme (background, accent, controls card) carries through every review screen.
+  const theme = review.game.theme;
+  const look = useMemo(() => themeLook(theme), [theme]);
+  usePageLook(look);
   const fiQuestions = form.firstImpression.questions;
   const devQuestions = form.playtest.questions;
   const timing = view.step === 'playtest' && playing;

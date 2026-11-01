@@ -56,7 +56,7 @@
   min-width: 0;
   padding: var(--playloop-space-48) 56px 56px;
   border-radius: var(--playloop-radius-20);
-  background: var(--playloop-surface-card);
+  background: var(--theme-card, var(--playloop-surface-card));
   color: var(--playloop-text-primary);
 }
 
@@ -73,8 +73,10 @@
   left: 20px;
   height: 20px;
   background:
-    linear-gradient(90deg, #ff3f00, #ffa082) left / 20px 20px no-repeat,
-    linear-gradient(90deg, #ff3f00, #ffa082) right / 20px 20px no-repeat;
+    var(--theme-accent-gradient, linear-gradient(90deg, #ff3f00, #ffa082)) left / 20px 20px
+      no-repeat,
+    var(--theme-accent-gradient, linear-gradient(90deg, #ff3f00, #ffa082)) right / 20px 20px
+      no-repeat;
   pointer-events: none;
 }
 
@@ -123,7 +125,14 @@
   gap: var(--playloop-space-16);
 }
 
-/* Figma "primary button" instances here use 12 × 32 px padding and the 20 px label. */
+/* Figma "primary button" instances here use 12 × 32 px padding and the 20 px label. The colours
+   follow the game's accent (gameTheme.js). */
+.next,
+.send {
+  background: var(--theme-button, var(--playloop-gradient-primary));
+  color: var(--theme-on-button, var(--playloop-text-primary));
+}
+
 .next {
   padding: var(--playloop-space-12) var(--playloop-space-32);
 }
@@ -287,7 +296,7 @@
   flex-shrink: 0;
   padding: var(--playloop-space-24) var(--playloop-space-32);
   border-radius: var(--playloop-radius-20);
-  background: var(--playloop-surface-card);
+  background: var(--theme-card, var(--playloop-surface-card));
   font: var(--playloop-type-body);
   color: var(--playloop-text-body);
 }
@@ -296,7 +305,7 @@
   align-self: flex-start;
   padding: var(--playloop-space-12) var(--playloop-space-24);
   border-radius: var(--playloop-radius-20);
-  background: var(--playloop-surface-chip);
+  background: var(--theme-card, var(--playloop-surface-chip));
   font: var(--playloop-type-heading-3);
   color: var(--playloop-text-primary);
 }
@@ -378,6 +387,8 @@
 
 .controls {
   flex-flow: row wrap;
+  background: var(--theme-controls, var(--playloop-surface-card));
+  color: var(--theme-on-controls, var(--playloop-text-primary));
   align-items: center;
   gap: var(--playloop-space-12) var(--playloop-space-16);
   padding: var(--playloop-space-24) var(--playloop-space-32);
@@ -403,7 +414,6 @@
 .control dd {
   margin: 0;
   font: var(--playloop-type-caption);
-  color: var(--playloop-text-body);
 }
 
 .issues {
@@ -617,7 +627,7 @@
   width: 14px;
   height: 14px;
   border-radius: 0 4px;
-  background: linear-gradient(90deg, #ff3f00, #ffa082);
+  background: var(--theme-accent-gradient, linear-gradient(90deg, #ff3f00, #ffa082));
 }
 
 .quote {

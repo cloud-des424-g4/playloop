@@ -4,6 +4,9 @@ import { NotFoundPage, RouteErrorPage } from './pages/NotFoundPage.jsx';
 import { PlaceholderPage } from './pages/PlaceholderPage.jsx';
 import { ExplorePage } from './features/explore/ExplorePage.jsx';
 import { MyGamesPage } from './features/games/MyGamesPage.jsx';
+import { GamePage } from './features/games/GamePage.jsx';
+import { GameEditorPage } from './features/games/GameEditorPage.jsx';
+import { MyGameRedirect } from './features/games/MyGameRedirect.jsx';
 import { FormBuilderPage } from './features/forms/FormBuilderPage.jsx';
 import { FeedbackInboxPage } from './features/feedback/FeedbackInboxPage.jsx';
 import { ReviewsPage, PublishedReviewPage } from './features/reviews/ReviewsPage.jsx';
@@ -16,13 +19,8 @@ import { SignUpPage } from './pages/auth/SignUpPage.jsx';
 // Route map for the high-fidelity screens. Each placeholder names the Figma frame it should be
 // built from; swap the element for the real page when it lands.
 const screens = [
-  { path: 'games/:gameId', title: 'Game description', figmaNode: '167:980' },
-
   { path: 'roulette', title: 'Playtest Roulette', figmaNode: '356:1636' },
 
-  { path: 'my-games/new', title: 'Publish a game', figmaNode: '272:630' },
-  { path: 'my-games/:gameId', title: 'Published game', figmaNode: '257:515' },
-  { path: 'my-games/:gameId/edit', title: 'Edit game', figmaNode: '272:630' },
   { path: 'users/:username', title: 'Public profile', figmaNode: '210:225' },
   { path: 'settings/profile', title: 'Edit profile', figmaNode: '210:300' },
   { path: 'admin', title: 'Admin: Dashboard', figmaNode: '375:1089' },
@@ -81,7 +79,11 @@ export const routes = [
             element: <PlaceholderPage title={title} figmaNode={figmaNode} />,
           })),
           { index: true, element: <ExplorePage /> },
+          { path: 'games/:gameId', element: <GamePage /> },
           { path: 'my-games', element: <MyGamesPage /> },
+          { path: 'my-games/new', element: <GameEditorPage /> },
+          { path: 'my-games/:gameId', element: <MyGameRedirect /> },
+          { path: 'my-games/:gameId/edit', element: <GameEditorPage /> },
           { path: 'my-games/:gameId/form', element: <FormBuilderPage /> },
           { path: 'my-games/:gameId/feedback', element: <FeedbackInboxPage /> },
           { path: 'games/:gameId/reviews', element: <ReviewsPage /> },

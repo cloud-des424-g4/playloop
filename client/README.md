@@ -157,8 +157,30 @@ Requests include credentials, send JSON, and throw `ApiError` (`status`, `code`,
 ## Routes
 
 `src/routes.jsx` maps every high-fidelity screen to a placeholder that links to its Figma frame:
-game description, roulette, publish/edit/published game, public and edit profile and the admin
-pages. Replace a placeholder's `element` with the real page when it is built.
+roulette, public and edit profile and the admin pages. Replace a placeholder's `element` with the
+real page when it is built.
+
+## Game page and editor
+
+| Route                    | Screen                                                       | Figma node |
+| ------------------------ | ------------------------------------------------------------ | ---------- |
+| `/games/:gameId`         | Public game page in the game's theme                         | `167:980`  |
+| `/my-games/new`          | Name a new game; creates the draft                           | -          |
+| `/my-games/:gameId/edit` | Game editor ("published game" frame is the editor)           | `257:515`  |
+| `/my-games/:gameId`      | Redirects: drafts to the editor, published games to the page | -          |
+
+- **Themes** (`features/games/gameTheme.js`): the background preset or uploaded image, accent and
+  controls-card colours become the shell background and `--theme-*` variables through
+  `usePageLook` (`components/layout/pageLook.js`). The game page and every review screen use them.
+  Storm is the Figma game page; Overcast reuses the storm photo lightened and Night is a gradient,
+  since Figma only has small thumbnails of those. Text colours are picked for contrast.
+- **Editor:** drafts autosave two seconds after a change; a published game saves on Save changes,
+  since the API requires it to stay complete. The publish bar mirrors the server's publish checklist.
+  Media, background images and builds upload straight to storage (`lib/upload.js`, multipart for
+  large builds). Locally, web builds stay "Processing" because the unzip Lambda is not running;
+  use a web link instead.
+- The game page adds a "Reviews & Discussion" link, which Figma does not have. The owner sees Edit
+  game instead of Try our Game!
 
 ## Review flow
 
