@@ -1,0 +1,202 @@
+/* Playtest Roulette (Figma 356:1636, 356:1690). */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-8);
+}
+
+.intro {
+  padding-left: var(--playloop-space-40);
+}
+
+.lead {
+  max-width: 602px;
+  padding-left: var(--playloop-space-20);
+  font: var(--playloop-type-body);
+  color: var(--playloop-text-body);
+  text-shadow: var(--playloop-shadow-text);
+}
+
+.caption {
+  font: var(--playloop-type-caption);
+  color: var(--playloop-text-caption);
+}
+
+/* Wheel (or the result card) on the left, the glass panel on the right. */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 622px) minmax(0, 586px);
+  justify-content: space-between;
+  align-items: start;
+  gap: var(--playloop-space-40);
+  padding: 0 29px 0 var(--playloop-space-20);
+}
+
+.wheelColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-40);
+}
+
+.wheelButton {
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+}
+
+/* The artwork includes the pointer, so it turns two full rounds per spin and ends upright. */
+.wheel {
+  display: block;
+  width: 100%;
+  height: auto;
+  transform: rotate(calc(var(--turns) * 720deg));
+  transition: transform 1.4s cubic-bezier(0.17, 0.67, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wheel {
+    transition: none;
+  }
+}
+
+/* "Select" (365:1920): glass panel with the bottom-left and top-right corners rounded. */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-24);
+  min-width: 0;
+  margin-top: 17px;
+  padding: var(--playloop-space-40);
+  border-radius: 0 50px;
+  background: var(--playloop-surface-card);
+  color: var(--playloop-text-primary);
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-10);
+}
+
+.rowTitle {
+  font: var(--playloop-type-card-title);
+  text-shadow: var(--playloop-shadow-text);
+}
+
+.chips,
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--playloop-space-8);
+}
+
+.info {
+  display: flex;
+  align-items: center;
+  gap: var(--playloop-space-8);
+  font: var(--playloop-type-caption);
+  color: var(--playloop-text-caption);
+}
+
+.spin {
+  padding: var(--playloop-space-12);
+  border: 0;
+  border-radius: var(--playloop-radius-20) 0;
+  background: var(--playloop-accent-orange);
+  font: var(--playloop-type-card-title);
+  color: var(--playloop-text-inverse);
+  cursor: pointer;
+}
+
+.spin:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+/* ---- Result ---- */
+
+.resultCard {
+  width: 412px;
+  justify-self: center;
+}
+
+.resultCard img {
+  height: 325px;
+}
+
+.resultPanel {
+  gap: var(--playloop-space-16);
+}
+
+.gameTitle {
+  font: var(--playloop-type-heading-1);
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.pitch {
+  font: var(--playloop-type-body);
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: var(--playloop-type-body-small);
+  color: var(--playloop-text-body);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--playloop-space-12);
+}
+
+.start {
+  padding: var(--playloop-space-12) var(--playloop-space-28);
+  background: var(--playloop-accent-orange);
+  font: var(--playloop-type-body);
+  color: var(--playloop-text-inverse);
+  box-shadow: 0 4px 4px rgb(0 0 0 / 25%);
+}
+
+.again {
+  padding: var(--playloop-space-12) var(--playloop-space-20);
+  font: var(--playloop-type-body);
+}
+
+.change {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: var(--playloop-type-caption);
+  color: #5e5e5e;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 1000px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0;
+  }
+
+  .wheelColumn {
+    align-items: center;
+  }
+
+  .wheelButton {
+    max-width: 420px;
+  }
+
+  .resultCard {
+    width: min(412px, 100%);
+  }
+}

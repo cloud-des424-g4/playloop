@@ -157,8 +157,21 @@ Requests include credentials, send JSON, and throw `ApiError` (`status`, `code`,
 ## Routes
 
 `src/routes.jsx` maps every high-fidelity screen to a placeholder that links to its Figma frame:
-roulette and the admin pages. Replace a placeholder's `element` with the real page when it is
+only the admin pages are left. Replace a placeholder's `element` with the real page when it is
 built.
+
+## Playtest Roulette
+
+`/roulette` is built from Figma `356:1636` (preferences) and `356:1690` (result) in
+`src/features/roulette`.
+
+- Genres take several values; platform, build stage and time take one each, as `POST
+/roulette/spin` expects. Picking a chip again clears it, and no selection means everything.
+- The API picks the game. The wheel artwork (which includes the pointer) turns two full rounds per
+  spin for show and stays still with reduced motion.
+- Spin again excludes the games already shown; Start playtest sends the spin token to
+  `/roulette/accept` and opens the review flow.
+- The chips are `ChoiceChip`, restyled to the hi-fi orange look of this frame.
 
 ## Profiles
 

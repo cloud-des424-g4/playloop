@@ -1,19 +1,22 @@
-/* Figma uses KoHo 16 px here, a documented legacy exception. Kode Mono is used until the
-   typography is resolved. */
+/* Hi-fi Playtest Roulette (356:1636) overrides of the wireframe chip: orange tint, solid orange
+   when picked. Figma sets the label in KoHo, a documented legacy exception; Kode Mono is used. */
 .chip {
   display: inline-flex;
   align-items: flex-start;
   padding: var(--playloop-space-8) var(--playloop-space-14);
   border: 0;
-  border-radius: 0 var(--playloop-radius-8);
-  background: #a8a8a8;
-  font: 500 16px / normal var(--playloop-font-mono);
-  color: #000;
+  border-radius: 0 var(--playloop-radius-30);
+  background: var(--playloop-tint-orange);
+  font: 500 16px / 1.2 var(--playloop-font-mono);
+  color: var(--playloop-deep-orange);
   white-space: nowrap;
+  filter: drop-shadow(0 4px 2px rgb(0 0 0 / 25%));
+  cursor: pointer;
 }
 
 .selected {
   background: var(--playloop-accent-orange);
+  color: var(--playloop-text-inverse);
 }
 
 .chip:disabled {

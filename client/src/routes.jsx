@@ -9,6 +9,7 @@ import { GameEditorPage } from './features/games/GameEditorPage.jsx';
 import { MyGameRedirect } from './features/games/MyGameRedirect.jsx';
 import { ProfilePage } from './features/profile/ProfilePage.jsx';
 import { EditProfilePage } from './features/profile/EditProfilePage.jsx';
+import { RoulettePage } from './features/roulette/RoulettePage.jsx';
 import { FormBuilderPage } from './features/forms/FormBuilderPage.jsx';
 import { FeedbackInboxPage } from './features/feedback/FeedbackInboxPage.jsx';
 import { ReviewsPage, PublishedReviewPage } from './features/reviews/ReviewsPage.jsx';
@@ -21,8 +22,6 @@ import { SignUpPage } from './pages/auth/SignUpPage.jsx';
 // Route map for the high-fidelity screens. Each placeholder names the Figma frame it should be
 // built from; swap the element for the real page when it lands.
 const screens = [
-  { path: 'roulette', title: 'Playtest Roulette', figmaNode: '356:1636' },
-
   { path: 'admin', title: 'Admin: Dashboard', figmaNode: '375:1089' },
   { path: 'admin/reports', title: 'Admin: Report Queue', figmaNode: '405:1475' },
   { path: 'admin/moderation', title: 'Admin: Content Moderation', figmaNode: '405:1523' },
@@ -80,6 +79,7 @@ export const routes = [
           })),
           { index: true, element: <ExplorePage /> },
           { path: 'games/:gameId', element: <GamePage /> },
+          { path: 'roulette', element: <RoulettePage /> },
           { path: 'users/:username', element: <ProfilePage /> },
           { path: 'settings/profile', element: <EditProfilePage /> },
           { path: 'my-games', element: <MyGamesPage /> },
