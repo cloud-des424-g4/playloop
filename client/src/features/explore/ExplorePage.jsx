@@ -28,6 +28,7 @@ import lettering from '../../assets/auth/playloop-lettering.png';
 import heroBlob from '../../assets/explore/hero-blob.svg';
 import roulette from '../../assets/auth/bubble-roulette.png';
 import publish from '../../assets/features/publish.png';
+import { cardTags } from '../games/gameLabels.js';
 import styles from './ExplorePage.module.css';
 
 // GET /games has no "upcoming" sort yet, so that tab is shown but disabled.
@@ -237,16 +238,6 @@ export function ExplorePage() {
       </section>
     </div>
   );
-}
-
-// Genre (in its tone), engine, then platforms, as on the Figma cards.
-function cardTags(game, genreLabel) {
-  const [genre] = game.genres;
-  return [
-    ...(genre ? [{ label: genreLabel(genre), tone: toneForGenre(genre) }] : []),
-    { label: optionLabel(game.engine) },
-    ...game.platforms.map((platform) => ({ label: optionLabel(platform) })),
-  ];
 }
 
 function Recommendations({ resource, genreLabel }) {

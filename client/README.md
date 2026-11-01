@@ -157,8 +157,22 @@ Requests include credentials, send JSON, and throw `ApiError` (`status`, `code`,
 ## Routes
 
 `src/routes.jsx` maps every high-fidelity screen to a placeholder that links to its Figma frame:
-roulette, public and edit profile and the admin pages. Replace a placeholder's `element` with the
-real page when it is built.
+roulette and the admin pages. Replace a placeholder's `element` with the real page when it is
+built.
+
+## Profiles
+
+| Route               | Screen                                           | Figma node           |
+| ------------------- | ------------------------------------------------ | -------------------- |
+| `/users/:username`  | Public profile, Published Games and Reviews tabs | `210:225`, `210:262` |
+| `/settings/profile` | Edit profile                                     | `210:300`            |
+
+- The tab is in the URL (`?tab=reviews`); both tabs load six at a time with Load more.
+- The header shows the first link from the profile; Figma has room for one.
+- Figma has three badge icons for the API's eight badges, so each badge uses the closest one
+  (`BADGE_ICONS` in `ProfilePage.jsx`).
+- Edit profile follows the API rather than Figma where they differ: the username is read-only and
+  platforms are Web, PC, Mac and Mobile (no Console). Links have an editable label and URL.
 
 ## Game page and editor
 

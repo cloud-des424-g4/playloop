@@ -1,3 +1,4 @@
+import { toneForGenre } from '../../lib/tagTones.js';
 import { optionLabel } from '../explore/exploreQuery.js';
 
 const ENGINE_NAMES = {
@@ -18,4 +19,14 @@ export function updatedDate(value) {
   const date = new Date(value);
   const pad = (n) => String(n).padStart(2, '0');
   return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()}`;
+}
+
+// Tags on a game card: the first genre in its tone, the engine, then platforms (Figma 178:230).
+export function cardTags(game, genreLabel = optionLabel) {
+  const [genre] = game.genres;
+  return [
+    ...(genre ? [{ label: genreLabel(genre), tone: toneForGenre(genre) }] : []),
+    ...(game.engine ? [{ label: optionLabel(game.engine) }] : []),
+    ...game.platforms.map((platform) => ({ label: optionLabel(platform) })),
+  ];
 }

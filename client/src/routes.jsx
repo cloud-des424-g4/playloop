@@ -7,6 +7,8 @@ import { MyGamesPage } from './features/games/MyGamesPage.jsx';
 import { GamePage } from './features/games/GamePage.jsx';
 import { GameEditorPage } from './features/games/GameEditorPage.jsx';
 import { MyGameRedirect } from './features/games/MyGameRedirect.jsx';
+import { ProfilePage } from './features/profile/ProfilePage.jsx';
+import { EditProfilePage } from './features/profile/EditProfilePage.jsx';
 import { FormBuilderPage } from './features/forms/FormBuilderPage.jsx';
 import { FeedbackInboxPage } from './features/feedback/FeedbackInboxPage.jsx';
 import { ReviewsPage, PublishedReviewPage } from './features/reviews/ReviewsPage.jsx';
@@ -21,8 +23,6 @@ import { SignUpPage } from './pages/auth/SignUpPage.jsx';
 const screens = [
   { path: 'roulette', title: 'Playtest Roulette', figmaNode: '356:1636' },
 
-  { path: 'users/:username', title: 'Public profile', figmaNode: '210:225' },
-  { path: 'settings/profile', title: 'Edit profile', figmaNode: '210:300' },
   { path: 'admin', title: 'Admin: Dashboard', figmaNode: '375:1089' },
   { path: 'admin/reports', title: 'Admin: Report Queue', figmaNode: '405:1475' },
   { path: 'admin/moderation', title: 'Admin: Content Moderation', figmaNode: '405:1523' },
@@ -80,6 +80,8 @@ export const routes = [
           })),
           { index: true, element: <ExplorePage /> },
           { path: 'games/:gameId', element: <GamePage /> },
+          { path: 'users/:username', element: <ProfilePage /> },
+          { path: 'settings/profile', element: <EditProfilePage /> },
           { path: 'my-games', element: <MyGamesPage /> },
           { path: 'my-games/new', element: <GameEditorPage /> },
           { path: 'my-games/:gameId', element: <MyGameRedirect /> },
