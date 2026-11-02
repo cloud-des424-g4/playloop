@@ -1,7 +1,7 @@
 import { levelFor } from '@playloop/shared';
 import { Game } from '../games/game.model.js';
 import { getConfig, runtimeConfig } from '../meta/config.service.js';
-import { notify } from '../notifications/notification.service.js';
+import { notify } from '../outbox/outbox.service.js';
 import { Review } from '../reviews/review.model.js';
 import { User } from '../users/user.model.js';
 import { toUserSummary, USER_SUMMARY_FIELDS } from '../users/user.service.js';

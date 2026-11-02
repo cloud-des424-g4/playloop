@@ -5,7 +5,7 @@ import { attachBuilds, downloadOptions, webPlayUrl } from '../builds/build.servi
 import { reactionSummaries } from '../discussions/discussion.service.js';
 import { toUserSummary, USER_SUMMARY_FIELDS } from '../users/user.service.js';
 import { Game } from '../games/game.model.js';
-import { notify } from '../notifications/notification.service.js';
+import { notify } from '../outbox/outbox.service.js';
 import {
   adjustReputation,
   awardAchievements,

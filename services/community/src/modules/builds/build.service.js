@@ -5,7 +5,7 @@ import { env } from '../../config/env.js';
 import { lambda } from '../../config/lambda.js';
 import { s3 } from '../../config/s3.js';
 import { ApiError, logger } from '@playloop/kit';
-import { notify } from '../notifications/notification.service.js';
+import { notify } from '../outbox/outbox.service.js';
 import { Game } from '../games/game.model.js';
 import { takeUpload } from '../uploads/upload.service.js';
 import { Build } from './build.model.js';

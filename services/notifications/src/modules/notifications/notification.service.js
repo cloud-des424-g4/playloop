@@ -1,34 +1,15 @@
-import { mediaUrl } from '../../utils/mediaUrl.js';
-import { ApiError } from '@playloop/kit';
-import { toUserSummary, USER_SUMMARY_FIELDS } from '../users/user.service.js';
+import { ApiError, internalClient } from '@playloop/kit';
 import { Notification } from './notification.model.js';
 
-const gameRef = (game) =>
-  game
-    ? {
-        id: game._id.toString(),
-        title: game.title,
-        coverUrl: mediaUrl(game.media?.find((item) => item.type === 'image')?.key),
-        deleted: Boolean(game.deletedAt),
-      }
-    : undefined;
+const community = internalClient('COMMUNITY_URL');
+const NO_REFS = { users: {}, games: {} };
 
-export async function notify(input, session) {
-  const [doc] = await Notification.create(
-    [
-      {
-        user: input.user,
-        type: input.type,
-        message: input.message,
-        link: input.link,
-        actor: input.actor,
-        game: input.game,
-        reviewId: input.reviewId,
-      },
-    ],
-    { session },
-  );
-  return doc;
+export async function deliverNotification({ id, ...notification }) {
+  try {
+    await Notification.create({ _id: id, ...notification });
+  } catch (err) {
+    if (err.code !== 11000) throw err;
+  }
 }
 
 export async function listNotifications(userId, query) {
@@ -40,9 +21,7 @@ export async function listNotifications(userId, query) {
     Notification.find(filter)
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
-      .limit(limit)
-      .populate('actor', USER_SUMMARY_FIELDS)
-      .populate('game', 'title media deletedAt'),
+      .limit(limit),
     Notification.countDocuments(filter),
     Notification.countDocuments({ user: userId, read: false }),
   ]);
@@ -65,15 +44,29 @@ export async function markAllRead(userId) {
   await Notification.updateMany({ user: userId, read: false }, { read: true });
 }
 
-export function toNotification(notification) {
+export async function loadRefs(items) {
+  const ids = (field) => [...new Set(items.flatMap((item) => item[field]?.toString() ?? []))];
+  const [users, games] = [ids('actor'), ids('game')];
+  if (!users.length && !games.length) return NO_REFS;
+  try {
+    return await community.post('/internal/refs', { users, games });
+  } catch (err) {
+    if (err.status === 503) return NO_REFS;
+    throw err;
+  }
+}
+
+export function toNotification(notification, refs) {
+  const actor = refs.users[notification.actor];
+  const game = refs.games[notification.game];
   return {
     id: notification._id.toString(),
     type: notification.type,
     read: notification.read,
     message: notification.message,
     link: notification.link,
-    ...(notification.actor && { actor: toUserSummary(notification.actor) }),
-    ...(notification.game && { game: gameRef(notification.game) }),
+    ...(actor && { actor }),
+    ...(game && { game }),
     ...(notification.reviewId && { reviewId: notification.reviewId.toString() }),
     createdAt: notification.createdAt,
   };

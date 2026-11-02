@@ -4,14 +4,14 @@ const { ObjectId } = mongoose.Schema.Types;
 
 const notificationSchema = new mongoose.Schema(
   {
-    user: { type: ObjectId, ref: 'User', required: true },
+    user: { type: ObjectId, required: true },
     type: { type: String, required: true },
     read: { type: Boolean, default: false },
     message: { type: String, required: true },
     link: { type: String, required: true },
-    actor: { type: ObjectId, ref: 'User' },
-    game: { type: ObjectId, ref: 'Game' },
-    reviewId: { type: ObjectId },
+    actor: ObjectId,
+    game: ObjectId,
+    reviewId: ObjectId,
   },
   { timestamps: { createdAt: true, updatedAt: false } },
 );

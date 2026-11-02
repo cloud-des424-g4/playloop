@@ -1,8 +1,10 @@
 import { afterAll, afterEach, beforeAll, inject } from 'vitest';
 import mongoose from 'mongoose';
+import { startStack, stopStack } from './stack.js';
 
 beforeAll(async () => {
   await mongoose.connect(inject('mongoUri'), { dbName: `test-${process.env.VITEST_POOL_ID}` });
+  await startStack();
 });
 
 afterEach(async () => {
@@ -11,6 +13,7 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
+  await stopStack();
   await mongoose.connection.dropDatabase();
   await mongoose.disconnect();
 });

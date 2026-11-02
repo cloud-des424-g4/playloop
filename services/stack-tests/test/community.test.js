@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
-import { createApp } from './stack.js';
+import { createApp, settle } from './stack.js';
 import { User } from '../../community/src/modules/users/user.model.js';
 import { authCookie, createPublishedGame, createSubmittedReview, createUser } from './helpers.js';
 
@@ -69,6 +69,7 @@ describe('votes and reputation', () => {
       myVote: 1,
     });
 
+    await settle();
     const notes = await request(app).get('/api/me/notifications').set(as(reviewer));
     expect(notes.body.items.some((item) => item.type === 'level_up')).toBe(true);
 
@@ -142,6 +143,7 @@ describe('discussions and notifications', () => {
     expect(list.body.total).toBe(1);
     expect(list.body.items[0].id).toBe(created.body.id);
 
+    await settle();
     const bell = await request(app).get('/api/me/notifications').set(as(reviewer));
     expect(bell.body.unreadCount).toBeGreaterThan(0);
     const replyNote = bell.body.items.find((item) => item.type === 'reply_received');

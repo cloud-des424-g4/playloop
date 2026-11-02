@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { ApiError } from '@playloop/kit';
-import { notify } from '../notifications/notification.service.js';
+import { notify } from '../outbox/outbox.service.js';
 import { Game } from '../games/game.model.js';
 import { Review } from '../reviews/review.model.js';
 import { toUserSummary, USER_SUMMARY_FIELDS } from '../users/user.service.js';

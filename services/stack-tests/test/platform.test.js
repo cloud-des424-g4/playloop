@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
-import { createApp } from './stack.js';
+import { createApp, settle } from './stack.js';
 import { User } from '../../community/src/modules/users/user.model.js';
 import { authCookie, createPublishedGame, createSubmittedReview, createUser } from './helpers.js';
 
@@ -136,6 +136,7 @@ describe('votes, roulette, reports and admin', () => {
     expect(accepted.status).toBe(201);
     expect(accepted.body.origin).toBe('roulette');
 
+    await settle();
     const bell = await request(app).get('/api/me/notifications/unread-count').set(as(reviewer));
     expect(bell.body.count).toBeGreaterThan(0);
   });

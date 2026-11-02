@@ -5,7 +5,7 @@ import { listFeatured, setFeatured, visible } from '../games/discovery.service.j
 import { Featured } from '../games/featured.model.js';
 import { Game } from '../games/game.model.js';
 import { toGameCard } from '../games/game.service.js';
-import { notify } from '../notifications/notification.service.js';
+import { notify } from '../outbox/outbox.service.js';
 import { getConfig, toConfig, updateConfig } from '../meta/config.service.js';
 import { reverseReviewReputation } from '../reputation/reputation.service.js';
 import { Report } from '../reports/report.model.js';

@@ -1,10 +1,10 @@
 import { createHmac } from 'node:crypto';
 import { beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
-import { createApp } from './stack.js';
+import { createApp, settle } from './stack.js';
 import { Build } from '../../community/src/modules/builds/build.model.js';
 import { Upload } from '../../community/src/modules/uploads/upload.model.js';
-import { Notification } from '../../community/src/modules/notifications/notification.model.js';
+import { Notification } from '../../notifications/src/modules/notifications/notification.model.js';
 import { authCookie, createPublishedGame, createSubmittedReview, createUser } from './helpers.js';
 
 const app = createApp();
@@ -108,6 +108,7 @@ describe('moderation', () => {
     const browse = await request(app).get('/api/games');
     expect(browse.body.items.map((item) => item.id)).not.toContain(game._id.toString());
 
+    await settle();
     const note = await Notification.findOne({ user: dev._id, type: 'content_hidden' });
     expect(note.message).toContain('Broken download');
 
@@ -280,6 +281,7 @@ describe('builds', () => {
     const stored = await Build.findById(web._id);
     expect(stored.status).toBe('ready');
     expect(stored.playUrl).toContain('index.html');
+    await settle();
     expect(await Notification.countDocuments({ user: dev._id, type: 'build_ready' })).toBe(1);
 
     const again = await request(app)
@@ -288,6 +290,7 @@ describe('builds', () => {
       .set('X-PlayLoop-Signature', sign(body))
       .send(body);
     expect(again.status).toBe(204);
+    await settle();
     expect(await Notification.countDocuments({ user: dev._id, type: 'build_ready' })).toBe(1);
   });
 

@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
-import { createApp } from './stack.js';
-import { Notification } from '../../community/src/modules/notifications/notification.model.js';
+import { createApp, settle, withServiceDown } from './stack.js';
+import { notify } from '../../community/src/modules/outbox/outbox.service.js';
+import { Notification } from '../../notifications/src/modules/notifications/notification.model.js';
 import { authCookie, createPublishedGame, createSubmittedReview, createUser } from './helpers.js';
 
 const app = createApp();
@@ -17,7 +18,10 @@ beforeEach(async () => {
   game = await createPublishedGame(dev);
 });
 
-const inbox = (user, query = '') => request(app).get(`/api/me/notifications${query}`).set(as(user));
+const inbox = async (user, query = '') => {
+  await settle();
+  return request(app).get(`/api/me/notifications${query}`).set(as(user));
+};
 
 function readyToSubmit() {
   const done = new Date();
@@ -46,6 +50,42 @@ function readyToSubmit() {
     },
   });
 }
+
+describe('details from Community', () => {
+  async function replyNote() {
+    await notify({
+      user: dev._id,
+      type: 'review_received',
+      message: 'New review',
+      link: '/x',
+      actor: reviewer._id,
+      game: game._id,
+    });
+  }
+
+  it('lists notifications without actor and game when Community is down', async () => {
+    await replyNote();
+    await settle();
+
+    const res = await withServiceDown('community', () => inbox(dev));
+
+    expect(res.status).toBe(200);
+    expect(res.body.items[0].message).toBe('New review');
+    expect(res.body.items[0].actor).toBeUndefined();
+    expect(res.body.items[0].game).toBeUndefined();
+  });
+
+  it('reports a removed game as deleted', async () => {
+    await replyNote();
+    game.deletedAt = new Date();
+    await game.save();
+
+    const res = await inbox(dev);
+
+    expect(res.body.items[0].game.deleted).toBe(true);
+    expect(res.body.items[0].actor.displayName).toBe('Kai');
+  });
+});
 
 describe('triggers', () => {
   it('tells the developer about a new review', async () => {

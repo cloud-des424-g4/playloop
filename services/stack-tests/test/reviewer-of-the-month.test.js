@@ -3,9 +3,9 @@ import { once } from 'node:events';
 import { createServer } from 'node:http';
 import { describe, expect, it } from 'vitest';
 import request from 'supertest';
-import { createApp } from './stack.js';
+import { createApp, settle } from './stack.js';
 import { User } from '../../community/src/modules/users/user.model.js';
-import { Notification } from '../../community/src/modules/notifications/notification.model.js';
+import { Notification } from '../../notifications/src/modules/notifications/notification.model.js';
 import { ReputationEvent } from '../../community/src/modules/reputation/reputation-event.model.js';
 import { handler } from '../../../lambdas/monthly-badges/src/index.js';
 import { createUser } from './helpers.js';
@@ -43,6 +43,7 @@ describe('Reviewer of the Month', () => {
     ]);
     expect(await monthBadges(currentLeader)).toEqual([]);
     expect(await monthBadges(runnerUp)).toEqual([]);
+    await settle();
     expect(
       await Notification.countDocuments({ user: winner._id, type: 'badge_awarded' }),
     ).toBeGreaterThanOrEqual(1);

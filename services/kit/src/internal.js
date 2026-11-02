@@ -64,3 +64,14 @@ export function internalClient(urlEnvName, { timeoutMs = 3000 } = {}) {
     put: (path, body) => call('PUT', path, body),
   };
 }
+
+const identity = internalClient('IDENTITY_URL');
+
+export async function loadRemoteAccount(id) {
+  try {
+    return await identity.get(`/internal/accounts/${id}/access`);
+  } catch (err) {
+    if (err.status === 404) return null;
+    throw err;
+  }
+}
