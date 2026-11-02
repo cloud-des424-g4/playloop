@@ -7,21 +7,21 @@
   },
   "workspaces": [
     "client",
-    "server",
     "shared",
+    "services/*",
     "lambdas/*"
   ],
   "scripts": {
-    "seed": "npm run seed -w @playloop/server",
-    "dev": "npm run dev -w @playloop/server",
-    "start": "npm start -w @playloop/server",
-    "test": "npm test -w @playloop/server -w @playloop/lambda-build-unzip",
+    "seed": "docker compose run --rm identity node services/identity/scripts/seed.js && docker compose run --rm community node services/community/scripts/seed.js",
+    "dev": "docker compose up --build",
+    "smoke": "node services/stack-tests/smoke.js",
+    "test": "npm test -w @playloop/stack-tests -w @playloop/lambda-build-unzip -w @playloop/lambda-monthly-badges",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "spec:lint": "redocly lint playloop",
     "spec:bundle": "redocly bundle playloop",
-    "services:up": "docker compose up -d --wait && docker compose wait storage-init",
+    "services:up": "docker compose up -d --build --wait gateway",
     "services:down": "docker compose down"
   },
   "devDependencies": {

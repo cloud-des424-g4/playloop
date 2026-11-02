@@ -28,6 +28,8 @@ uploads:
         $ref: ../responses/errors.yaml#/Forbidden
       '404':
         $ref: ../responses/errors.yaml#/NotFound
+      '409':
+        $ref: ../responses/errors.yaml#/Conflict
       '429':
         $ref: ../responses/errors.yaml#/RateLimited
 completeUpload:

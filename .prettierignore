@@ -4,3 +4,4 @@ coverage/
 .aws-sam/
 package-lock.json
 client/
+.superpowers/

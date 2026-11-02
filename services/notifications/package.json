@@ -1,0 +1,15 @@
+{
+  "name": "@playloop/notifications",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "@playloop/kit": "^0.1.0",
+    "express": "^5.3.0",
+    "mongoose": "^9.11.2"
+  }
+}

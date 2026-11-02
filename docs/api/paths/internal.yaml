@@ -26,3 +26,19 @@ buildStatus:
         $ref: ../responses/errors.yaml#/Unauthorized
       '404':
         $ref: ../responses/errors.yaml#/NotFound
+
+monthlyBadges:
+  post:
+    tags: [Internal]
+    operationId: awardMonthlyBadges
+    summary: Called by the monthly-badges Lambda to award Reviewer of the Month
+    description: |
+      Not for the browser. Signed like the build status callback, over an empty body.
+      Gives the badge to last month's top reviewer. Calling it again for the same month does nothing.
+    security:
+      - internalSignature: []
+    responses:
+      '204':
+        description: Award finished, or there was nothing to award
+      '401':
+        $ref: ../responses/errors.yaml#/Unauthorized

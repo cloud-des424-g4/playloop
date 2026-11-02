@@ -107,6 +107,8 @@ notifications:
         $ref: ../responses/errors.yaml#/ValidationError
       '401':
         $ref: ../responses/errors.yaml#/Unauthorized
+      '403':
+        $ref: ../responses/errors.yaml#/Forbidden
 unreadCount:
   get:
     tags: [Notifications]
@@ -122,6 +124,8 @@ unreadCount:
               $ref: ../schemas/notification.yaml#/UnreadCount
       '401':
         $ref: ../responses/errors.yaml#/Unauthorized
+      '403':
+        $ref: ../responses/errors.yaml#/Forbidden
 readNotification:
   post:
     tags: [Notifications]
@@ -136,6 +140,8 @@ readNotification:
         $ref: ../responses/errors.yaml#/ValidationError
       '401':
         $ref: ../responses/errors.yaml#/Unauthorized
+      '403':
+        $ref: ../responses/errors.yaml#/Forbidden
       '404':
         $ref: ../responses/errors.yaml#/NotFound
 readAllNotifications:
@@ -148,3 +154,5 @@ readAllNotifications:
         description: All marked as read
       '401':
         $ref: ../responses/errors.yaml#/Unauthorized
+      '403':
+        $ref: ../responses/errors.yaml#/Forbidden

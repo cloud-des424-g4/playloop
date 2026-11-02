@@ -13,6 +13,7 @@ properties:
       - NO_MATCH
       - RATE_LIMITED
       - INTERNAL_ERROR
+      - SERVICE_UNAVAILABLE
   message:
     type: string
     description: Human-readable message that can be shown to the user

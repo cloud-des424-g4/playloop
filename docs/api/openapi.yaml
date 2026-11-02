@@ -208,6 +208,8 @@ paths:
 
   /internal/builds/{buildId}/status:
     $ref: paths/internal.yaml#/buildStatus
+  /internal/badges/monthly:
+    $ref: paths/internal.yaml#/monthlyBadges
 components:
   securitySchemes:
     cookieAuth:

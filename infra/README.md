@@ -14,7 +14,7 @@ Do the steps in this order: some values only exist after an earlier step. Repeat
 2. Network access: allow `0.0.0.0/0` (App Runner has no fixed outbound IP without a VPC connector).
 3. Connection string, with the database name: `mongodb+srv://…/playloop-dev?retryWrites=true` → `MONGODB_URI`.
 
-## 2. Storage, CDN and the web build Lambda (SAM)
+## 2. Storage, CDN and the Lambdas (SAM)
 
 Run from `infra/`. The first deploy uses placeholders for the URLs that don't exist yet.
 
@@ -94,6 +94,22 @@ The login response **must** include a `Set-Cookie: playloop_token=…` header. I
 4. The game plays from `PLAY_CDN_URL/{buildId}/…`, a separate domain from the app.
 
 Locally there is no Lambda: leave `BUILD_UNZIP_FUNCTION` empty and web builds stay `processing`.
+
+## How monthly badges are awarded
+
+EventBridge runs the `monthly-badges` Lambda at 00:05 UTC on the 1st, 2nd and 3rd of each month. The Lambda calls `POST /api/internal/badges/monthly` signed with `INTERNAL_WEBHOOK_SECRET`, and the API gives Reviewer of the Month to last month's top reviewer. Each month is awarded once, so the later runs only matter if the first one fails.
+
+To run it on demand:
+
+```bash
+aws lambda invoke --function-name playloop-dev-monthly-badges /dev/stdout
+```
+
+Locally there is no Lambda, so call the API yourself:
+
+```bash
+curl -i -X POST http://localhost:4000/api/internal/badges/monthly -H "X-PlayLoop-Signature: $(printf '' | openssl dgst -sha256 -hmac "$INTERNAL_WEBHOOK_SECRET" -hex | awk '{print $NF}')"
+```
 
 ## Known limits
 
