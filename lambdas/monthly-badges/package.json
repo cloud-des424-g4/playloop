@@ -3,5 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Awards the Reviewer of the Month badge on a monthly schedule"
+  "description": "Awards the Reviewer of the Month badge on a monthly schedule",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test"
+  }
 }

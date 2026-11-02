@@ -153,7 +153,6 @@ async function syncHallOfFame() {
   }
 }
 
-// shortcut: runs lazily on leaderboard views, call it from the monthly-badges Lambda once that exists
 export async function awardReviewerOfTheMonth() {
   const config = await getConfig();
   const definition = config.badges.find(
@@ -202,7 +201,6 @@ async function monthStandings(limit, month = currentMonth()) {
 
 export async function getLeaderboard(period = 'all_time', limit = 10) {
   await syncHallOfFame();
-  await awardReviewerOfTheMonth();
   if (period === 'month') {
     const rows = await monthStandings(limit);
     const users = await User.find({ _id: { $in: rows.map((row) => row._id) } }).select(

@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: PlayLoop storage, CDN and web build processing
+Description: PlayLoop storage, CDN, web build processing and monthly badges
 
 Parameters:
   Env:
@@ -12,7 +12,7 @@ Parameters:
     Description: Frontend origins allowed to upload straight to S3, e.g. https://main.d123.amplifyapp.com
   ApiUrl:
     Type: String
-    Description: Base URL of the API that the unzip Lambda calls back, e.g. https://abc.ap-southeast-1.awsapprunner.com
+    Description: Base URL of the API that the Lambdas call, e.g. https://abc.ap-southeast-1.awsapprunner.com
   InternalWebhookSecret:
     Type: String
     NoEcho: true
@@ -212,6 +212,34 @@ Resources:
             BucketName: !Ref PlayBucket
       EventInvokeConfig:
         MaximumRetryAttempts: 1
+
+  MonthlyBadgesLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/playloop-${Env}-monthly-badges
+      RetentionInDays: 14
+
+  MonthlyBadgesFunction:
+    Type: AWS::Serverless::Function
+    DependsOn: MonthlyBadgesLogs
+    Properties:
+      FunctionName: !Sub playloop-${Env}-monthly-badges
+      CodeUri: ../lambdas/monthly-badges
+      Handler: src/index.handler
+      Runtime: nodejs22.x
+      Architectures: [arm64]
+      MemorySize: 128
+      Timeout: 30
+      Environment:
+        Variables:
+          API_URL: !Ref ApiUrl
+          INTERNAL_WEBHOOK_SECRET: !Ref InternalWebhookSecret
+      Events:
+        Monthly:
+          Type: Schedule
+          Properties:
+            # Three days so a failed run isn't a lost month; the API awards once per month
+            Schedule: cron(5 0 1-3 * ? *)
 
   ApiAccessPolicy:
     Type: AWS::IAM::ManagedPolicy

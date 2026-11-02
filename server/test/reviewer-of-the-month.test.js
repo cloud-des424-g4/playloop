@@ -1,9 +1,12 @@
+import { createHmac } from 'node:crypto';
+import { once } from 'node:events';
 import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../src/app.js';
 import { User } from '../src/modules/users/user.model.js';
 import { Notification } from '../src/modules/notifications/notification.model.js';
 import { ReputationEvent } from '../src/modules/reputation/reputation-event.model.js';
+import { handler } from '../../lambdas/monthly-badges/src/index.js';
 import { createUser } from './helpers.js';
 
 const app = createApp();
@@ -17,6 +20,9 @@ const earn = (user, points, createdAt) =>
 const monthBadges = async (user) =>
   (await User.findById(user._id)).badges.filter((b) => b.key === 'reviewer_of_the_month');
 
+const runMonthlyJob = (signature = createHmac('sha256', 'test-webhook-secret').digest('hex')) =>
+  request(app).post('/api/internal/badges/monthly').set('X-PlayLoop-Signature', signature);
+
 describe('Reviewer of the Month', () => {
   it("goes once to last month's top reviewer, not this month's leader", async () => {
     const [runnerUp, winner, currentLeader] = await Promise.all([
@@ -28,11 +34,8 @@ describe('Reviewer of the Month', () => {
     await earn(winner, 25, lastMonthDay);
     await earn(currentLeader, 100, now);
 
-    await Promise.all([
-      request(app).get('/api/leaderboard'),
-      request(app).get('/api/leaderboard?period=month'),
-      request(app).get('/api/leaderboard?period=month'),
-    ]);
+    const responses = await Promise.all([runMonthlyJob(), runMonthlyJob(), runMonthlyJob()]);
+    expect(responses.map((res) => res.status)).toEqual([204, 204, 204]);
 
     expect(await monthBadges(winner)).toEqual([
       expect.objectContaining({ key: 'reviewer_of_the_month', period: lastMonth }),
@@ -53,10 +56,10 @@ describe('Reviewer of the Month', () => {
   it("doesn't change hands once a month is awarded", async () => {
     const [winner, lateRiser] = await Promise.all([createUser(), createUser()]);
     await earn(winner, 25, lastMonthDay);
-    await request(app).get('/api/leaderboard');
+    await runMonthlyJob();
 
     await earn(lateRiser, 500, lastMonthDay);
-    await request(app).get('/api/leaderboard');
+    await runMonthlyJob();
 
     expect(await monthBadges(winner)).toHaveLength(1);
     expect(await monthBadges(lateRiser)).toEqual([]);
@@ -65,7 +68,36 @@ describe('Reviewer of the Month', () => {
   it('awards nobody when no one earned points last month', async () => {
     const user = await createUser();
     await earn(user, 40, now);
-    await request(app).get('/api/leaderboard?period=month');
+    await runMonthlyJob();
     expect(await monthBadges(user)).toEqual([]);
+  });
+
+  it('is not awarded by viewing the leaderboard', async () => {
+    const winner = await createUser();
+    await earn(winner, 25, lastMonthDay);
+    await request(app).get('/api/leaderboard');
+    expect(await monthBadges(winner)).toEqual([]);
+  });
+
+  it('is awarded when the real Lambda handler calls the API', async () => {
+    const winner = await createUser();
+    await earn(winner, 25, lastMonthDay);
+    const api = app.listen(0);
+    await once(api, 'listening');
+    process.env.API_URL = `http://127.0.0.1:${api.address().port}`;
+    try {
+      await handler();
+    } finally {
+      api.close();
+    }
+    expect(await monthBadges(winner)).toHaveLength(1);
+  });
+
+  it('rejects the monthly job without a valid signature', async () => {
+    const winner = await createUser();
+    await earn(winner, 25, lastMonthDay);
+    const res = await runMonthlyJob('forged');
+    expect(res.status).toBe(401);
+    expect(await monthBadges(winner)).toEqual([]);
   });
 });

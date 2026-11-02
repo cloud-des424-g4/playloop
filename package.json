@@ -15,7 +15,7 @@
     "seed": "npm run seed -w @playloop/server",
     "dev": "npm run dev -w @playloop/server",
     "start": "npm start -w @playloop/server",
-    "test": "npm test -w @playloop/server -w @playloop/lambda-build-unzip",
+    "test": "npm test -w @playloop/server -w @playloop/lambda-build-unzip -w @playloop/lambda-monthly-badges",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

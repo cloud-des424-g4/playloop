@@ -2,6 +2,7 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { env } from '../../config/env.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { setBuildStatus } from '../builds/build.service.js';
+import { awardReviewerOfTheMonth } from '../reputation/reputation.service.js';
 
 function requireSignature(req, _res, next) {
   const provided = req.get('x-playloop-signature') ?? '';
@@ -18,6 +19,11 @@ function requireSignature(req, _res, next) {
 
 export async function buildStatus(req, res) {
   await setBuildStatus(req.params.buildId, req.body);
+  res.status(204).end();
+}
+
+export async function monthlyBadges(_req, res) {
+  await awardReviewerOfTheMonth();
   res.status(204).end();
 }
 
