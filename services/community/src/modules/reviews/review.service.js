@@ -14,7 +14,8 @@ import {
   notifyProgress,
   reverseReviewReputation,
 } from '../reputation/reputation.service.js';
-import { proofUrl, takeUpload } from '../uploads/upload.service.js';
+import { takeUpload } from '../media/media.client.js';
+import { proofUrl } from '../../utils/proofUrl.js';
 import { votesByReview } from '../votes/vote.service.js';
 import { Reaction, Reply } from '../discussions/discussion.model.js';
 import { Vote } from '../votes/vote.model.js';
@@ -173,7 +174,7 @@ export async function savePlaytest(reviewId, userId, { playedSeconds, proofUploa
 
   if (proofUploadId) {
     const upload = await takeUpload(proofUploadId, userId, 'proof_screenshot');
-    if (upload.review && !upload.review.equals(review._id)) {
+    if (upload.review && !review._id.equals(upload.review)) {
       throw ApiError.validation('Some fields are invalid', [
         { path: '/body/proofUploadId', message: 'This upload belongs to another review' },
       ]);

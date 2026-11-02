@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { createApp, settle } from './stack.js';
 import { Build } from '../../community/src/modules/builds/build.model.js';
-import { Upload } from '../../community/src/modules/uploads/upload.model.js';
+import { Upload } from '../../media/src/modules/uploads/upload.model.js';
 import { Notification } from '../../notifications/src/modules/notifications/notification.model.js';
 import { authCookie, createPublishedGame, createSubmittedReview, createUser } from './helpers.js';
 

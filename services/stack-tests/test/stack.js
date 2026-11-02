@@ -2,13 +2,19 @@ import { once } from 'node:events';
 import { createServer } from 'node:http';
 import { createApp as createCommunity } from '../../community/src/app.js';
 import { flushOutbox } from '../../community/src/modules/outbox/outbox.service.js';
+import { createApp as createMedia } from '../../media/src/app.js';
 import { createApp as createNotifications } from '../../notifications/src/app.js';
 
 const ROUTES = [
   ['/api/me/notifications', 'notifications'],
+  ['/api/uploads', 'media'],
   ['/api', 'community'],
 ];
-const apps = { community: createCommunity(), notifications: createNotifications() };
+const apps = {
+  community: createCommunity(),
+  media: createMedia(),
+  notifications: createNotifications(),
+};
 const servers = {};
 const urls = {};
 

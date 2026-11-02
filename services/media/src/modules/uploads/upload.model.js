@@ -4,7 +4,7 @@ const { ObjectId } = mongoose.Schema.Types;
 
 const uploadSchema = new mongoose.Schema(
   {
-    owner: { type: ObjectId, ref: 'User', required: true },
+    owner: { type: ObjectId, required: true },
     purpose: { type: String, required: true },
     fileName: { type: String, required: true },
     contentType: { type: String, required: true },
@@ -14,8 +14,8 @@ const uploadSchema = new mongoose.Schema(
     status: { type: String, enum: ['pending', 'uploaded'], default: 'pending' },
     method: { type: String, enum: ['single', 'multipart'], required: true },
     s3UploadId: String,
-    game: { type: ObjectId, ref: 'Game' },
-    review: { type: ObjectId, ref: 'Review' },
+    game: ObjectId,
+    review: ObjectId,
     expiresAt: { type: Date, required: true },
   },
   { timestamps: true },

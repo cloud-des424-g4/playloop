@@ -11,9 +11,9 @@ import {
   QUESTION_TYPES,
   ROULETTE_TIME_LIMITS,
   STRENGTHS,
+  uploadLimitsForMeta,
 } from '@playloop/shared';
 import { getLeaderboard } from '../reputation/reputation.service.js';
-import { uploadLimitsForMeta } from '../uploads/upload.service.js';
 import { getConfig } from './config.service.js';
 
 const REPORT_REASONS = ['spam', 'offensive', 'inappropriate', 'cheating', 'broken_game', 'other'];

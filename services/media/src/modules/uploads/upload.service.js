@@ -1,7 +1,6 @@
 import {
   CompleteMultipartUploadCommand,
   CreateMultipartUploadCommand,
-  GetObjectCommand,
   HeadObjectCommand,
   PutObjectCommand,
   UploadPartCommand,
@@ -9,45 +8,17 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { env } from '../../config/env.js';
 import { s3 } from '../../config/s3.js';
-import { ApiError } from '@playloop/kit';
+import { ApiError, internalClient } from '@playloop/kit';
+import { UPLOAD_RULES } from '@playloop/shared';
 import { mediaUrl } from '../../utils/mediaUrl.js';
-import { Game } from '../games/game.model.js';
-import { Review } from '../reviews/review.model.js';
 import { Upload } from './upload.model.js';
+
+const community = internalClient('COMMUNITY_URL');
 
 const MB = 1024 * 1024;
 const PART_SIZE = 50 * MB;
 const MULTIPART_FROM = 100 * MB;
 const HOUR = 60 * 60 * 1000;
-
-const kind = (types, max, exts) => ({ types, max, exts });
-
-export const UPLOAD_RULES = {
-  avatar: [kind(['image/jpeg', 'image/png'], 2 * MB, ['jpg', 'jpeg', 'png'])],
-  game_media: [
-    kind(['image/jpeg', 'image/png'], 5 * MB, ['jpg', 'jpeg', 'png']),
-    kind(['video/mp4'], 100 * MB, ['mp4']),
-  ],
-  game_background: [kind(['image/jpeg', 'image/png'], 5 * MB, ['jpg', 'jpeg', 'png'])],
-  proof_screenshot: [kind(['image/jpeg', 'image/png'], 5 * MB, ['jpg', 'jpeg', 'png'])],
-  web_build: [kind(['application/zip', 'application/x-zip-compressed'], 500 * MB, ['zip'])],
-  download_build: [
-    kind(
-      [
-        'application/zip',
-        'application/x-zip-compressed',
-        'application/vnd.microsoft.portable-executable',
-        'application/x-msdownload',
-        'application/octet-stream',
-        'application/x-apple-diskimage',
-        'application/gzip',
-        'application/x-gtar',
-      ],
-      2 * 1024 * MB,
-      ['zip', 'exe', 'dmg', 'tar.gz'],
-    ),
-  ],
-};
 
 const NEEDS_GAME = new Set(['game_media', 'game_background', 'web_build', 'download_build']);
 const PRIVATE = new Set(['proof_screenshot', 'web_build', 'download_build']);
@@ -68,36 +39,7 @@ function matchingRule(purpose, fileName, contentType, size) {
   );
 }
 
-async function ownedGame(gameId, userId) {
-  const game = await Game.findOne({ _id: gameId, deletedAt: null, removedAt: null });
-  if (!game) throw ApiError.notFound('Game not found');
-  if (!game.owner.equals(userId)) throw ApiError.forbidden();
-  return game;
-}
-
-async function ownedReview(reviewId, userId) {
-  const review = await Review.findById(reviewId);
-  if (!review || review.removedAt) throw ApiError.notFound('Review not found');
-  if (!review.reviewer.equals(userId)) throw ApiError.forbidden();
-  if (review.status !== 'in_progress') {
-    throw ApiError.conflict('This review is already submitted');
-  }
-  return review;
-}
-
 const safeName = (fileName) => fileName.replace(/[^\w.\- ]+/g, '_').slice(-80);
-
-export function uploadLimitsForMeta() {
-  const one = (rules) => rules.map((rule) => ({ contentTypes: rule.types, maxBytes: rule.max }));
-  return {
-    avatar: one(UPLOAD_RULES.avatar),
-    game_media: one(UPLOAD_RULES.game_media),
-    game_background: one(UPLOAD_RULES.game_background),
-    proof_screenshot: one(UPLOAD_RULES.proof_screenshot),
-    web_build: one(UPLOAD_RULES.web_build),
-    download_build: one(UPLOAD_RULES.download_build),
-  };
-}
 
 export async function createUpload(userId, input) {
   const { purpose, fileName, contentType, size, gameId, reviewId } = input;
@@ -117,8 +59,9 @@ export async function createUpload(userId, input) {
     ]);
   }
 
-  if (gameId) await ownedGame(gameId, userId);
-  if (reviewId) await ownedReview(reviewId, userId);
+  if (gameId || reviewId) {
+    await community.post('/internal/upload-targets/check', { userId, gameId, reviewId });
+  }
 
   const bucket = bucketFor(purpose);
   if (!bucket) throw ApiError.validation('File storage is not configured');
@@ -257,13 +200,6 @@ export function toUpload(upload) {
   };
 }
 
-export async function proofUrl(key) {
-  if (!key || !env.aws.buildsBucket) return null;
-  return getSignedUrl(s3, new GetObjectCommand({ Bucket: env.aws.buildsBucket, Key: key }), {
-    expiresIn: 900,
-  });
-}
-
 export async function takeUpload(uploadId, userId, purpose) {
   const upload = await Upload.findOne({
     _id: uploadId,
@@ -277,33 +213,29 @@ export async function takeUpload(uploadId, userId, purpose) {
       { path: '/body', message: 'Complete the upload first' },
     ]);
   }
-  return upload;
+  return {
+    id: upload._id.toString(),
+    key: upload.key,
+    bucket: upload.bucket,
+    fileName: upload.fileName,
+    size: upload.size,
+    contentType: upload.contentType,
+    game: upload.game?.toString() ?? null,
+    review: upload.review?.toString() ?? null,
+  };
 }
 
-export async function resolveGameMedia(game, mediaIds, userId) {
+export async function gameMedia({ gameId, mediaIds, userId }) {
   const uploads = await Upload.find({
     _id: { $in: mediaIds },
     owner: userId,
     purpose: 'game_media',
     status: 'uploaded',
-    game: game._id,
+    game: gameId,
   });
-  const byUpload = new Map(uploads.map((upload) => [upload._id.toString(), upload]));
-  const existing = new Map(game.media.map((item) => [item._id.toString(), item]));
-  return mediaIds.map((id) => {
-    if (existing.has(id)) return existing.get(id);
-    const upload = byUpload.get(id);
-    if (!upload) {
-      throw ApiError.validation('Some fields are invalid', [
-        {
-          path: '/body/mediaIds',
-          message: 'Each media id must be a completed upload or an existing file',
-        },
-      ]);
-    }
-    return {
-      type: upload.contentType.startsWith('video/') ? 'video' : 'image',
-      key: upload.key,
-    };
-  });
+  return uploads.map((upload) => ({
+    id: upload._id.toString(),
+    key: upload.key,
+    contentType: upload.contentType,
+  }));
 }

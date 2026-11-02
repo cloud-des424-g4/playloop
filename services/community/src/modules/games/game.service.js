@@ -6,7 +6,7 @@ import { attachBuilds, toBuild } from '../builds/build.service.js';
 import { activeGenreKeys, getConfig } from '../meta/config.service.js';
 import { awardAchievements } from '../reputation/reputation.service.js';
 import { Review } from '../reviews/review.model.js';
-import { resolveGameMedia, takeUpload } from '../uploads/upload.service.js';
+import { resolveGameMedia, takeUpload } from '../media/media.client.js';
 import { User } from '../users/user.model.js';
 import { Game } from './game.model.js';
 import { defaultForm } from './game.defaults.js';
@@ -71,7 +71,7 @@ export async function updateGame(gameId, userId, input) {
   if (mediaIds) game.media = await resolveGameMedia(game, mediaIds, userId);
   if (theme?.backgroundUploadId) {
     const upload = await takeUpload(theme.backgroundUploadId, userId, 'game_background');
-    if (upload.game && !upload.game.equals(game._id)) {
+    if (upload.game && !game._id.equals(upload.game)) {
       throw ApiError.validation('Some fields are invalid', [
         { path: '/body/theme/backgroundUploadId', message: 'This upload belongs to another game' },
       ]);

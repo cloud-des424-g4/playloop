@@ -7,7 +7,7 @@ import { s3 } from '../../config/s3.js';
 import { ApiError, logger } from '@playloop/kit';
 import { notify } from '../outbox/outbox.service.js';
 import { Game } from '../games/game.model.js';
-import { takeUpload } from '../uploads/upload.service.js';
+import { takeUpload } from '../media/media.client.js';
 import { Build } from './build.model.js';
 
 const DOWNLOAD_TARGETS = {
@@ -65,7 +65,7 @@ export async function addBuild(gameId, userId, { uploadId, target }) {
   const game = await ownedGame(gameId, userId);
   const purpose = target === 'web' ? 'web_build' : DOWNLOAD_TARGETS[target];
   const upload = await takeUpload(uploadId, userId, purpose);
-  if (upload.game && !upload.game.equals(game._id)) {
+  if (upload.game && !game._id.equals(upload.game)) {
     throw ApiError.validation('Some fields are invalid', [
       { path: '/body/uploadId', message: 'This upload belongs to another game' },
     ]);

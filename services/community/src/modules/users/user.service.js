@@ -2,7 +2,7 @@ import { BADGES, levelFor } from '@playloop/shared';
 import { ApiError } from '@playloop/kit';
 import { mediaUrl } from '../../utils/mediaUrl.js';
 import { activeGenreKeys, getConfig } from '../meta/config.service.js';
-import { takeUpload } from '../uploads/upload.service.js';
+import { takeUpload } from '../media/media.client.js';
 import { Game } from '../games/game.model.js';
 import { Review } from '../reviews/review.model.js';
 import { User } from './user.model.js';

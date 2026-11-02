@@ -17,7 +17,6 @@ import {
   reviewRoutes,
 } from './modules/reviews/review.routes.js';
 import { rouletteRoutes } from './modules/roulette/roulette.routes.js';
-import { uploadRoutes } from './modules/uploads/upload.routes.js';
 import { meRoutes } from './modules/users/me.routes.js';
 import { userRoutes } from './modules/users/user.routes.js';
 
@@ -37,7 +36,6 @@ routes.use('/reviews', reviewRoutes);
 routes.use('/replies', replyRoutes);
 routes.use('/reactions', reactionRoutes);
 routes.use('/roulette', rouletteRoutes);
-routes.use('/uploads', uploadRoutes);
 routes.use('/reports', reportRoutes);
 routes.use('/me/games', myGameRoutes);
 routes.use('/me/reviews', myReviewRoutes);

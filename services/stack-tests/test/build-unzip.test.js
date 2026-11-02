@@ -4,7 +4,7 @@ import { createApp } from './stack.js';
 import { env } from '../../community/src/config/env.js';
 import { lambda } from '../../community/src/config/lambda.js';
 import { Build } from '../../community/src/modules/builds/build.model.js';
-import { Upload } from '../../community/src/modules/uploads/upload.model.js';
+import { Upload } from '../../media/src/modules/uploads/upload.model.js';
 import { authCookie, createPublishedGame, createUser } from './helpers.js';
 
 const app = createApp();
