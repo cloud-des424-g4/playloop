@@ -2,6 +2,7 @@ import { BADGES, levelFor } from '@playloop/shared';
 import { ApiError } from '@playloop/kit';
 import { mediaUrl } from '../../utils/mediaUrl.js';
 import { activeGenreKeys, getConfig } from '../meta/config.service.js';
+import { Reply } from '../discussions/discussion.model.js';
 import { takeUpload } from '../media/media.client.js';
 import { Game } from '../games/game.model.js';
 import { Review } from '../reviews/review.model.js';
@@ -102,18 +103,39 @@ const upsertMember = (id, { username, email, role }) =>
     { upsert: true, returnDocument: 'after' },
   );
 
-export async function ensureMember(id, account) {
+async function claimMember(id, account) {
   try {
-    return await toMe(await upsertMember(id, account));
+    return await upsertMember(id, account);
   } catch (err) {
-    if (err.code !== 11000) throw err;
+    if (err.code === 11000) return null;
+    throw err;
   }
-  // A registration whose reply was lost leaves a Member with no User behind it.
-  await Member.deleteMany({
-    _id: { $ne: id },
-    $or: [{ username: account.username }, { email: account.email }],
-  }).collation({ locale: 'en', strength: 2 });
-  return toMe(await upsertMember(id, account));
+}
+
+// A registration whose reply was lost leaves an older Member that never had a session.
+async function removeOrphans(id, { username, email }) {
+  const holders = await Member.find({ _id: { $lt: id }, $or: [{ username }, { email }] })
+    .collation({ locale: 'en', strength: 2 })
+    .select('_id');
+  for (const { _id } of holders) {
+    const owned = await Promise.all([
+      Game.exists({ owner: _id }),
+      Review.exists({ reviewer: _id }),
+      Reply.exists({ author: _id }),
+    ]);
+    if (owned.some(Boolean)) return;
+    await Member.deleteOne({ _id });
+  }
+}
+
+export async function ensureMember(id, account) {
+  let member = await claimMember(id, account);
+  if (!member) {
+    await removeOrphans(id, account);
+    member = await claimMember(id, account);
+  }
+  if (!member) throw ApiError.conflict('username or email is already taken');
+  return toMe(member);
 }
 
 export async function getMe(userId) {

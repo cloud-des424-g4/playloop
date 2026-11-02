@@ -1,11 +1,13 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import mongoose from 'mongoose';
 import request from 'supertest';
 import { createApp, withServiceDown } from './stack.js';
 import { createApp as createIdentity } from '../../identity/src/app.js';
 import { User } from '../../identity/src/modules/accounts/user.model.js';
 import { ModerationAction } from '../../community/src/modules/admin/moderation.model.js';
 import { Member } from '../../community/src/modules/users/member.model.js';
-import { authCookie, createUser } from './helpers.js';
+import { ensureMember } from '../../community/src/modules/users/user.service.js';
+import { authCookie, createPublishedGame, createUser } from './helpers.js';
 
 const app = createApp();
 const as = (user) => ({ Cookie: authCookie(user) });
@@ -40,6 +42,27 @@ describe('registration and login', () => {
     expect((await Member.findOne()).id).toBe(retried.body.id);
   });
 
+  it('refuses a username whose old Member still owns content', async () => {
+    await Member.init();
+    const owner = await createUser({ username: account.username, email: account.email });
+    await createPublishedGame(owner);
+    await User.deleteOne({ _id: owner._id });
+
+    const res = await register();
+    expect(res.status).toBe(409);
+    expect(await User.countDocuments()).toBe(0);
+    expect(await Member.exists({ _id: owner._id })).toBeTruthy();
+    expect((await request(app).get('/api/games')).status).toBe(200);
+  });
+
+  it("doesn't let a late call delete a newer Member", async () => {
+    await Member.init();
+    const { body } = await register();
+    const late = mongoose.Types.ObjectId.createFromTime(Math.floor(Date.now() / 1000) - 60);
+    await expect(ensureMember(late.toString(), account)).rejects.toMatchObject({ status: 409 });
+    expect(await Member.exists({ _id: body.id })).toBeTruthy();
+  });
+
   it('repairs a missing Member at login', async () => {
     const { body } = await register();
     await Member.deleteOne({ _id: body.id });
@@ -60,6 +83,24 @@ describe('registration and login', () => {
     await Member.deleteOne({ _id: user._id });
     const res = await request(app).get('/api/games').set(as(user));
     expect(res.status).toBe(200);
+  });
+});
+
+describe('password changes', () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it('limits each person, not everyone together', async () => {
+    vi.stubEnv('NODE_ENV', 'development');
+    const [first, second] = await Promise.all([createUser(), createUser()]);
+    const change = (user) =>
+      request(app)
+        .put('/api/auth/password')
+        .set(as(user))
+        .send({ currentPassword: 'wrong-password-1', newPassword: 'another-password-2' });
+
+    for (let attempt = 0; attempt < 10; attempt += 1) await change(first);
+    expect((await change(first)).status).toBe(429);
+    expect((await change(second)).status).toBe(400);
   });
 });
 

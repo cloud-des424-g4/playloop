@@ -209,6 +209,8 @@ if (!SMOKE_REMOTE) {
     '/internal/accounts/x/access',
     '/api/../internal/accounts/x/access',
     '/api/%2e%2e/internal/accounts/x/access',
+    '/internal/../api/health',
+    '/internal/%2e%2e/api/health',
   ]) {
     assert.equal(await rawStatus(path), 404, path);
   }

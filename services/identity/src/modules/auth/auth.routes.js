@@ -47,6 +47,11 @@ authRoutes.post(
 authRoutes.put(
   '/password',
   requireAuth,
-  rateLimit({ name: 'change-password', limit: 10, windowMs: 15 * MINUTE, key: identifier }),
+  rateLimit({
+    name: 'change-password',
+    limit: 10,
+    windowMs: 15 * MINUTE,
+    key: (req) => [`user:${req.user.id}`],
+  }),
   controller.changePassword,
 );
