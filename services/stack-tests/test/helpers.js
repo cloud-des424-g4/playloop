@@ -1,19 +1,30 @@
-import { User } from '../../community/src/modules/users/user.model.js';
+import { SESSION_COOKIE, signSessionToken } from '@playloop/kit';
+import { Member } from '../../community/src/modules/users/member.model.js';
+import { User } from '../../identity/src/modules/accounts/user.model.js';
 import { Game } from '../../community/src/modules/games/game.model.js';
 import { Review } from '../../community/src/modules/reviews/review.model.js';
 import { defaultForm } from '../../community/src/modules/games/game.defaults.js';
-import { SESSION_COOKIE, signSessionToken } from '../../community/src/middleware/auth.js';
 
 let count = 0;
 
-export function createUser(overrides = {}) {
+export async function createUser(overrides = {}) {
   count += 1;
-  return User.create({
+  const member = await Member.create({
     username: `user${count}`,
     email: `user${count}@example.com`,
-    passwordHash: 'not-a-real-hash',
     ...overrides,
   });
+  const { _id, username, email, role, status, suspension } = member.toObject();
+  await User.create({
+    _id,
+    username,
+    email,
+    role,
+    status,
+    suspension,
+    passwordHash: 'not-a-real-hash',
+  });
+  return member;
 }
 
 export const authCookie = (user) => `${SESSION_COOKIE}=${signSessionToken(user)}`;

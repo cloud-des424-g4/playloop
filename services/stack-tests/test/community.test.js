@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { createApp, settle } from './stack.js';
-import { User } from '../../community/src/modules/users/user.model.js';
+import { Member } from '../../community/src/modules/users/member.model.js';
 import { authCookie, createPublishedGame, createSubmittedReview, createUser } from './helpers.js';
 
 const app = createApp();
@@ -23,7 +23,7 @@ describe('votes and reputation', () => {
   const vote = (value, user = dev) =>
     request(app).put(`/api/reviews/${review._id}/vote`).set(as(user)).send({ value });
 
-  const points = () => User.findById(reviewer._id).then((user) => user.reputationPoints);
+  const points = () => Member.findById(reviewer._id).then((user) => user.reputationPoints);
 
   it('keeps one vote per person and does not pay back a penalty that never landed', async () => {
     const helpful = await vote(1);
@@ -51,14 +51,14 @@ describe('votes and reputation', () => {
       .set(as(dev))
       .send({ value: -1 });
     expect(penalty.body).toMatchObject({ notHelpfulCount: 1, myVote: -1 });
-    const author = await User.findById(fresh.reviewer);
+    const author = await Member.findById(fresh.reviewer);
     expect(author.reputationPoints).toBe(0);
     await request(app).delete(`/api/reviews/${fresh._id}/vote`).set(as(dev));
-    expect((await User.findById(fresh.reviewer)).reputationPoints).toBe(0);
+    expect((await Member.findById(fresh.reviewer)).reputationPoints).toBe(0);
   });
 
   it('lists the review, records a level up, and shows the leaderboard', async () => {
-    await User.updateOne({ _id: reviewer._id }, { reputationPoints: 95 });
+    await Member.updateOne({ _id: reviewer._id }, { reputationPoints: 95 });
     await vote(1);
 
     const listed = await request(app).get(`/api/games/${game._id}/reviews`).set(as(dev));

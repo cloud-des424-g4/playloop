@@ -4,13 +4,13 @@ const { ObjectId } = mongoose.Schema.Types;
 
 const reportSchema = new mongoose.Schema(
   {
-    reporter: { type: ObjectId, ref: 'User', required: true },
+    reporter: { type: ObjectId, ref: 'Member', required: true },
     targetType: { type: String, enum: ['game', 'review', 'reply', 'user'], required: true },
     targetId: { type: ObjectId, required: true },
     reason: { type: String, required: true },
     details: { type: String, default: null },
     status: { type: String, enum: ['open', 'resolved', 'dismissed'], default: 'open' },
-    resolvedBy: { type: ObjectId, ref: 'User' },
+    resolvedBy: { type: ObjectId, ref: 'Member' },
     resolvedAt: { type: Date, default: null },
     resolutionNote: { type: String, default: null },
   },

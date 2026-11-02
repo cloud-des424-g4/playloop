@@ -6,7 +6,7 @@ import { Game } from '../games/game.model.js';
 import { startReview } from '../reviews/review.service.js';
 import { Review } from '../reviews/review.model.js';
 import { toUserSummary, USER_SUMMARY_FIELDS } from '../users/user.service.js';
-import { User } from '../users/user.model.js';
+import { Member } from '../users/member.model.js';
 
 const minutes = (game) =>
   game.form.playtest.missions.reduce((sum, mission) => sum + mission.minutes, 0);
@@ -29,7 +29,7 @@ function toRouletteGame(game) {
 }
 
 export async function spin(userId, input) {
-  const banned = await User.find({ status: 'banned' }).distinct('_id');
+  const banned = await Member.find({ status: 'banned' }).distinct('_id');
   const filter = {
     status: 'published',
     deletedAt: null,

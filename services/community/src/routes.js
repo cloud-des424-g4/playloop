@@ -2,7 +2,6 @@ import { Router } from 'express';
 import { optionalAuth } from './middleware/auth.js';
 import { rateLimit } from '@playloop/kit';
 import { adminRoutes } from './modules/admin/admin.routes.js';
-import { authRoutes } from './modules/auth/auth.routes.js';
 import { replyRoutes, reactionRoutes } from './modules/discussions/discussion.routes.js';
 import { featured, recommendations } from './modules/games/discovery.controller.js';
 import { gameRoutes, myGameRoutes } from './modules/games/game.routes.js';
@@ -22,7 +21,6 @@ import { userRoutes } from './modules/users/user.routes.js';
 
 export const routes = Router();
 
-routes.use('/auth', authRoutes);
 routes.use('/games/:gameId/reviews', gameReviewRoutes);
 routes.use('/games/:gameId/feedback', gameFeedbackRoutes);
 routes.use('/games', gameRoutes);

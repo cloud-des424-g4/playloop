@@ -3,7 +3,7 @@ import { Game } from '../games/game.model.js';
 import { getConfig, runtimeConfig } from '../meta/config.service.js';
 import { notify } from '../outbox/outbox.service.js';
 import { Review } from '../reviews/review.model.js';
-import { User } from '../users/user.model.js';
+import { Member } from '../users/member.model.js';
 import { toUserSummary, USER_SUMMARY_FIELDS } from '../users/user.service.js';
 import { ReputationEvent } from './reputation-event.model.js';
 
@@ -18,7 +18,7 @@ export const feedbackPoints = (status) =>
 
 export async function adjustReputation(userId, delta, event, session) {
   if (!delta) return { applied: 0 };
-  const user = await User.findById(userId).session(session);
+  const user = await Member.findById(userId).session(session);
   if (!user) return { applied: 0 };
   const before = user.reputationPoints;
   const after = Math.max(0, before + delta);
@@ -39,7 +39,7 @@ export async function reverseReviewReputation(reviewId, session) {
   }
   for (const [userId, sum] of byUser) {
     if (!sum) continue;
-    const user = await User.findById(userId).session(session);
+    const user = await Member.findById(userId).session(session);
     if (!user) continue;
     user.reputationPoints = Math.max(0, user.reputationPoints - sum);
     await user.save({ session });
@@ -49,7 +49,7 @@ export async function reverseReviewReputation(reviewId, session) {
 
 export async function awardAchievements(userId, session) {
   const config = await getConfig();
-  const user = await User.findById(userId).session(session);
+  const user = await Member.findById(userId).session(session);
   if (!user) return [];
   const counts = await achievementCounts(userId, session);
   const earned = [];
@@ -133,10 +133,10 @@ async function syncHallOfFame() {
   const config = await getConfig();
   const definition = config.badges.find((badge) => badge.key === 'hall_of_fame' && badge.active);
   if (!definition) return;
-  const top = await User.find({ reputationPoints: { $gt: 0 }, status: { $ne: 'banned' } })
+  const top = await Member.find({ reputationPoints: { $gt: 0 }, status: { $ne: 'banned' } })
     .sort({ reputationPoints: -1, createdAt: 1 })
     .limit(definition.threshold ?? 10);
-  await User.updateMany(
+  await Member.updateMany(
     { 'badges.key': 'hall_of_fame', _id: { $nin: top.map((user) => user._id) } },
     { $pull: { badges: { key: 'hall_of_fame' } } },
   );
@@ -161,11 +161,11 @@ export async function awardReviewerOfTheMonth() {
   if (!definition) return;
   const period = previousMonth();
   const awarded = { key: definition.key, period };
-  if (await User.exists({ badges: { $elemMatch: awarded } })) return;
+  if (await Member.exists({ badges: { $elemMatch: awarded } })) return;
 
   const [leader] = await monthStandings(1, period);
   if (!leader) return;
-  const { modifiedCount } = await User.updateOne(
+  const { modifiedCount } = await Member.updateOne(
     { _id: leader._id, badges: { $not: { $elemMatch: awarded } } },
     { $push: { badges: { ...awarded, awardedAt: new Date() } } },
   );
@@ -203,7 +203,7 @@ export async function getLeaderboard(period = 'all_time', limit = 10) {
   await syncHallOfFame();
   if (period === 'month') {
     const rows = await monthStandings(limit);
-    const users = await User.find({ _id: { $in: rows.map((row) => row._id) } }).select(
+    const users = await Member.find({ _id: { $in: rows.map((row) => row._id) } }).select(
       USER_SUMMARY_FIELDS,
     );
     const byId = new Map(users.map((user) => [user._id.toString(), user]));
@@ -220,7 +220,7 @@ export async function getLeaderboard(period = 'all_time', limit = 10) {
     };
   }
 
-  const users = await User.find({ reputationPoints: { $gt: 0 }, status: { $ne: 'banned' } })
+  const users = await Member.find({ reputationPoints: { $gt: 0 }, status: { $ne: 'banned' } })
     .sort({ reputationPoints: -1, createdAt: 1 })
     .limit(limit)
     .select(USER_SUMMARY_FIELDS);

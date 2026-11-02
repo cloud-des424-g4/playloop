@@ -2,16 +2,19 @@ import { once } from 'node:events';
 import { createServer } from 'node:http';
 import { createApp as createCommunity } from '../../community/src/app.js';
 import { flushOutbox } from '../../community/src/modules/outbox/outbox.service.js';
+import { createApp as createIdentity } from '../../identity/src/app.js';
 import { createApp as createMedia } from '../../media/src/app.js';
 import { createApp as createNotifications } from '../../notifications/src/app.js';
 
 const ROUTES = [
+  ['/api/auth', 'identity'],
   ['/api/me/notifications', 'notifications'],
   ['/api/uploads', 'media'],
   ['/api', 'community'],
 ];
 const apps = {
   community: createCommunity(),
+  identity: createIdentity(),
   media: createMedia(),
   notifications: createNotifications(),
 };
@@ -22,7 +25,6 @@ const urlName = (service) => `${service.toUpperCase()}_URL`;
 
 function setUrls() {
   for (const [service, url] of Object.entries(urls)) process.env[urlName(service)] = url;
-  process.env.IDENTITY_URL = urls.community;
 }
 
 export function createApp() {

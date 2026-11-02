@@ -7,7 +7,7 @@ import { activeGenreKeys, getConfig } from '../meta/config.service.js';
 import { awardAchievements } from '../reputation/reputation.service.js';
 import { Review } from '../reviews/review.model.js';
 import { resolveGameMedia, takeUpload } from '../media/media.client.js';
-import { User } from '../users/user.model.js';
+import { Member } from '../users/member.model.js';
 import { Game } from './game.model.js';
 import { defaultForm } from './game.defaults.js';
 import {
@@ -53,7 +53,7 @@ export async function getGame(gameId, user) {
   if (game.hiddenAt && user?.role !== 'admin' && !isOwner(game, user?.id)) {
     throw ApiError.notFound('Game not found');
   }
-  const owner = await User.findById(game.owner._id).select('status');
+  const owner = await Member.findById(game.owner._id).select('status');
   if (owner?.status === 'banned' && user?.role !== 'admin' && !isOwner(game, user?.id)) {
     throw ApiError.notFound('Game not found');
   }
@@ -166,7 +166,7 @@ export async function updateForm(gameId, userId, input) {
 export async function listGames(query) {
   const page = query.page ?? 1;
   const limit = query.limit ?? 20;
-  const banned = await User.find({ status: 'banned' }).distinct('_id');
+  const banned = await Member.find({ status: 'banned' }).distinct('_id');
   const filter = {
     status: 'published',
     deletedAt: null,

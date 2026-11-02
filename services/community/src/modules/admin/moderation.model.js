@@ -4,7 +4,7 @@ const { ObjectId } = mongoose.Schema.Types;
 
 const moderationActionSchema = new mongoose.Schema(
   {
-    actor: { type: ObjectId, ref: 'User', required: true },
+    actor: { type: ObjectId, ref: 'Member', required: true },
     action: { type: String, required: true },
     targetType: { type: String, enum: ['game', 'review', 'reply', 'user'], required: true },
     targetId: { type: ObjectId, required: true },

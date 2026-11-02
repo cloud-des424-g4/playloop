@@ -1,0 +1,18 @@
+{
+  "name": "@playloop/identity",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "seed": "node --env-file-if-exists=.env scripts/seed.js",
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "@playloop/kit": "^0.1.0",
+    "@playloop/shared": "^0.1.0",
+    "bcrypt": "^6.0.0",
+    "express": "^5.3.0",
+    "mongoose": "^9.11.2"
+  }
+}

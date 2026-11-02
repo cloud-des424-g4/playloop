@@ -1,10 +1,8 @@
 import crypto from 'node:crypto';
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
-import { env } from '@playloop/kit';
-import { accountBlockMessage } from '../../middleware/auth.js';
-import { ApiError, logger } from '@playloop/kit';
-import { User } from '../users/user.model.js';
+import { accountBlockMessage, ApiError, env, logger } from '@playloop/kit';
+import { User } from '../accounts/user.model.js';
 import { PasswordReset } from './password-reset.model.js';
 
 const USERNAME_RE = /^[A-Za-z0-9_]{3,20}$/;

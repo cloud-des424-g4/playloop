@@ -16,7 +16,7 @@ const missionSchema = new mongoose.Schema(
 
 const gameSchema = new mongoose.Schema(
   {
-    owner: { type: ObjectId, ref: 'User', required: true },
+    owner: { type: ObjectId, ref: 'Member', required: true },
     status: { type: String, enum: GAME_STATUSES, default: 'draft' },
     deletedAt: { type: Date, default: null },
     title: { type: String, required: true, trim: true, maxlength: 60 },

@@ -5,7 +5,7 @@ const { ObjectId } = mongoose.Schema.Types;
 const buildSchema = new mongoose.Schema(
   {
     game: { type: ObjectId, ref: 'Game', required: true },
-    owner: { type: ObjectId, ref: 'User', required: true },
+    owner: { type: ObjectId, ref: 'Member', required: true },
     target: { type: String, enum: ['web', 'windows', 'mac', 'linux'], required: true },
     status: { type: String, enum: ['processing', 'ready', 'failed'], required: true },
     fileName: { type: String, required: true },

@@ -1,11 +1,10 @@
 import mongoose from 'mongoose';
 import { BADGES, PLATFORMS, USER_ROLES, USER_STATUSES } from '@playloop/shared';
 
-const userSchema = new mongoose.Schema(
+const memberSchema = new mongoose.Schema(
   {
     username: { type: String, required: true, trim: true, match: /^[A-Za-z0-9_]{3,20}$/ },
     email: { type: String, required: true, trim: true, lowercase: true },
-    passwordHash: { type: String, required: true, select: false },
     displayName: {
       type: String,
       trim: true,
@@ -26,7 +25,7 @@ const userSchema = new mongoose.Schema(
       reason: String,
       until: Date,
       at: Date,
-      by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      by: { type: mongoose.Schema.Types.ObjectId, ref: 'Member' },
     },
     reputationPoints: { type: Number, min: 0, default: 0 },
     badges: [
@@ -41,7 +40,7 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-userSchema.index({ username: 1 }, { unique: true, collation: { locale: 'en', strength: 2 } });
-userSchema.index({ email: 1 }, { unique: true });
+memberSchema.index({ username: 1 }, { unique: true, collation: { locale: 'en', strength: 2 } });
+memberSchema.index({ email: 1 }, { unique: true });
 
-export const User = mongoose.model('User', userSchema);
+export const Member = mongoose.model('Member', memberSchema);

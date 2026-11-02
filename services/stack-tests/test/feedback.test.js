@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { createApp } from './stack.js';
-import { User } from '../../community/src/modules/users/user.model.js';
+import { Member } from '../../community/src/modules/users/member.model.js';
 import { authCookie, createPublishedGame, createSubmittedReview, createUser } from './helpers.js';
 
 const app = createApp();
@@ -20,7 +20,7 @@ beforeEach(async () => {
 const setStatus = (reviewId, status, user = dev) =>
   request(app).put(`/api/reviews/${reviewId}/feedback-status`).set(as(user)).send({ status });
 
-const points = async () => (await User.findById(reviewer._id)).reputationPoints;
+const points = async () => (await Member.findById(reviewer._id)).reputationPoints;
 
 describe('Feedback Inbox', () => {
   it('is only for the game owner', async () => {

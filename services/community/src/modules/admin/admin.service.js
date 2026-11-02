@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { ApiError } from '@playloop/kit';
+import { ApiError, internalClient } from '@playloop/kit';
 import { Reply, Reaction } from '../discussions/discussion.model.js';
 import { listFeatured, setFeatured, visible } from '../games/discovery.service.js';
 import { Featured } from '../games/featured.model.js';
@@ -14,8 +14,10 @@ import { listReports, resolveReport as closeReport } from '../reports/report.ser
 import { Review } from '../reviews/review.model.js';
 import { Vote } from '../votes/vote.model.js';
 import { toUserSummary, USER_SUMMARY_FIELDS } from '../users/user.service.js';
-import { User } from '../users/user.model.js';
+import { Member } from '../users/member.model.js';
 import { ModerationAction } from './moderation.model.js';
+
+const identity = internalClient('IDENTITY_URL');
 
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -43,8 +45,10 @@ function toModerationAction(action) {
   };
 }
 
+const setAccess = (userId, access) => identity.put(`/internal/accounts/${userId}/access`, access);
+
 function liftExpiredSuspensions() {
-  return User.updateMany(
+  return Member.updateMany(
     { status: 'suspended', 'suspension.until': { $lte: new Date() } },
     { status: 'active', $unset: { suspension: 1 } },
   );
@@ -71,16 +75,16 @@ export async function stats(days = 30) {
     newReviews,
     newReports,
   ] = await Promise.all([
-    User.countDocuments(),
-    User.countDocuments({ status: 'suspended' }),
-    User.countDocuments({ status: 'banned' }),
+    Member.countDocuments(),
+    Member.countDocuments({ status: 'suspended' }),
+    Member.countDocuments({ status: 'banned' }),
     Game.countDocuments({ deletedAt: null, removedAt: null }),
     Game.countDocuments({ status: 'published', deletedAt: null, removedAt: null }),
     Review.countDocuments({ status: 'submitted', removedAt: null }),
     Review.countDocuments({ status: 'in_progress', removedAt: null }),
     Reply.countDocuments({ removedAt: null }),
     Report.countDocuments({ status: 'open' }),
-    User.aggregate([
+    Member.aggregate([
       { $match: { createdAt: { $gte: start } } },
       {
         $group: {
@@ -307,19 +311,19 @@ export async function listUsers(query) {
     if (/^[a-f\d]{24}$/i.test(query.search)) filter.$or.push({ _id: query.search });
   }
   const [items, total] = await Promise.all([
-    User.find(filter)
+    Member.find(filter)
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .populate('suspension.by', USER_SUMMARY_FIELDS),
-    User.countDocuments(filter),
+    Member.countDocuments(filter),
   ]);
   return { items: await Promise.all(items.map(toAdminUser)), page, limit, total };
 }
 
 async function loadUser(userId) {
   await liftExpiredSuspensions();
-  const user = await User.findById(userId).populate('suspension.by', USER_SUMMARY_FIELDS);
+  const user = await Member.findById(userId).populate('suspension.by', USER_SUMMARY_FIELDS);
   if (!user) throw ApiError.notFound('User not found');
   return user;
 }
@@ -331,13 +335,15 @@ export async function getUser(userId) {
 export async function suspendUser(userId, adminId, { reason, until }) {
   const user = await loadUser(userId);
   if (user.role === 'admin') throw ApiError.forbidden("Admins can't be suspended");
-  user.status = until == null ? 'banned' : 'suspended';
-  user.suspension = {
+  const status = until == null ? 'banned' : 'suspended';
+  const suspension = {
     reason,
     until: until == null ? null : new Date(until),
     at: new Date(),
     by: adminId,
   };
+  await setAccess(user._id, { status, suspension });
+  user.set({ status, suspension });
   await user.save();
   await record(adminId, user.status === 'banned' ? 'ban' : 'suspend', 'user', user._id, {
     reason,
@@ -349,6 +355,7 @@ export async function suspendUser(userId, adminId, { reason, until }) {
 export async function unsuspendUser(userId, adminId) {
   const user = await loadUser(userId);
   const wasBlocked = user.status !== 'active';
+  await setAccess(user._id, { status: 'active', suspension: null });
   user.status = 'active';
   user.suspension = undefined;
   await user.save();
@@ -360,6 +367,7 @@ export async function setRole(userId, adminId, role) {
   if (userId === adminId) throw ApiError.forbidden("You can't change your own role");
   const user = await loadUser(userId);
   const changed = user.role !== role;
+  await setAccess(user._id, { role });
   user.role = role;
   await user.save();
   if (changed) await record(adminId, 'role_change', 'user', user._id, { role });
@@ -412,7 +420,7 @@ async function contentSearch(search) {
   if (!search) return {};
   const pattern = new RegExp(escapeRegex(search), 'i');
   const [authors, games] = await Promise.all([
-    User.find({ $or: [{ username: pattern }, { displayName: pattern }] }).distinct('_id'),
+    Member.find({ $or: [{ username: pattern }, { displayName: pattern }] }).distinct('_id'),
     Game.find({ title: pattern }).distinct('_id'),
   ]);
   return {

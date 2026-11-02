@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { createApp, settle } from './stack.js';
-import { User } from '../../community/src/modules/users/user.model.js';
+import { Member } from '../../community/src/modules/users/member.model.js';
 import { authCookie, createPublishedGame, createSubmittedReview, createUser } from './helpers.js';
 
 const app = createApp();
@@ -78,14 +78,14 @@ describe('votes, roulette, reports and admin', () => {
       .send({ value: 1 });
     expect(helpful.status).toBe(200);
     expect(helpful.body).toMatchObject({ helpfulCount: 1, notHelpfulCount: 0, myVote: 1 });
-    expect((await User.findById(reviewer._id)).reputationPoints).toBe(10);
+    expect((await Member.findById(reviewer._id)).reputationPoints).toBe(10);
 
     const changed = await request(app)
       .put(`/api/reviews/${review._id}/vote`)
       .set(as(dev))
       .send({ value: -1 });
     expect(changed.body).toMatchObject({ helpfulCount: 0, notHelpfulCount: 1, myVote: -1 });
-    expect((await User.findById(reviewer._id)).reputationPoints).toBe(0);
+    expect((await Member.findById(reviewer._id)).reputationPoints).toBe(0);
 
     const removed = await request(app).delete(`/api/reviews/${review._id}/vote`).set(as(dev));
     expect(removed.body.myVote).toBeNull();

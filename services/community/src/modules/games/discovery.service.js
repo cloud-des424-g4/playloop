@@ -5,12 +5,12 @@ import { toGameCard } from '../games/game.service.js';
 import { Game } from '../games/game.model.js';
 import { Review } from '../reviews/review.model.js';
 import { USER_SUMMARY_FIELDS } from '../users/user.service.js';
-import { User } from '../users/user.model.js';
+import { Member } from '../users/member.model.js';
 
 export const visible = { status: 'published', deletedAt: null, hiddenAt: null, removedAt: null };
 
 async function bannedIds() {
-  return User.find({ status: 'banned' }).distinct('_id');
+  return Member.find({ status: 'banned' }).distinct('_id');
 }
 
 export async function featuredGames() {
@@ -104,7 +104,7 @@ export async function listRecommendations(user, limit = 5) {
   };
 
   if (user) {
-    const me = await User.findById(user.id);
+    const me = await Member.findById(user.id);
     if (me?.favoriteGenres.length) {
       const banned = await bannedIds();
       const matches = await Game.find({

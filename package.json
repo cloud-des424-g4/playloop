@@ -12,7 +12,7 @@
     "lambdas/*"
   ],
   "scripts": {
-    "seed": "npm run seed -w @playloop/community",
+    "seed": "npm run seed -w @playloop/identity && npm run seed -w @playloop/community",
     "dev": "npm run dev -w @playloop/community",
     "start": "npm start -w @playloop/community",
     "test": "npm test -w @playloop/stack-tests -w @playloop/lambda-build-unzip -w @playloop/lambda-monthly-badges",

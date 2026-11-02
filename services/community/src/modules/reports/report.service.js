@@ -3,7 +3,7 @@ import { Reply } from '../discussions/discussion.model.js';
 import { Game } from '../games/game.model.js';
 import { Review } from '../reviews/review.model.js';
 import { toUserSummary, USER_SUMMARY_FIELDS } from '../users/user.service.js';
-import { User } from '../users/user.model.js';
+import { Member } from '../users/member.model.js';
 import { Report } from './report.model.js';
 
 async function describeTarget(targetType, targetId) {
@@ -43,7 +43,7 @@ async function describeTarget(targetType, targetId) {
       link: `/games/${reply.game}/reviews/${reply.review}`,
     };
   }
-  const user = await User.findById(targetId);
+  const user = await Member.findById(targetId);
   if (!user) throw ApiError.notFound('User not found');
   return {
     ownerId: user._id.toString(),

@@ -4,7 +4,7 @@ import { createServer } from 'node:http';
 import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { createApp, settle } from './stack.js';
-import { User } from '../../community/src/modules/users/user.model.js';
+import { Member } from '../../community/src/modules/users/member.model.js';
 import { Notification } from '../../notifications/src/modules/notifications/notification.model.js';
 import { ReputationEvent } from '../../community/src/modules/reputation/reputation-event.model.js';
 import { handler } from '../../../lambdas/monthly-badges/src/index.js';
@@ -19,7 +19,7 @@ const earn = (user, points, createdAt) =>
   ReputationEvent.create({ user: user._id, points, kind: 'helpful_vote', createdAt });
 
 const monthBadges = async (user) =>
-  (await User.findById(user._id)).badges.filter((b) => b.key === 'reviewer_of_the_month');
+  (await Member.findById(user._id)).badges.filter((b) => b.key === 'reviewer_of_the_month');
 
 const runMonthlyJob = (signature = createHmac('sha256', 'test-webhook-secret').digest('hex')) =>
   request(app).post('/api/internal/badges/monthly').set('X-PlayLoop-Signature', signature);

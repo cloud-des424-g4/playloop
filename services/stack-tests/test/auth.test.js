@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { createApp } from './stack.js';
-import { User } from '../../community/src/modules/users/user.model.js';
-import { requestPasswordReset } from '../../community/src/modules/auth/auth.service.js';
+import { User } from '../../identity/src/modules/accounts/user.model.js';
+import { requestPasswordReset } from '../../identity/src/modules/auth/auth.service.js';
 
 const app = createApp();
 

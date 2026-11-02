@@ -5,7 +5,7 @@ import { activeGenreKeys, getConfig } from '../meta/config.service.js';
 import { takeUpload } from '../media/media.client.js';
 import { Game } from '../games/game.model.js';
 import { Review } from '../reviews/review.model.js';
-import { User } from './user.model.js';
+import { Member } from './member.model.js';
 
 export const USER_SUMMARY_FIELDS = 'username displayName avatarKey reputationPoints';
 
@@ -95,14 +95,35 @@ async function toPublicFields(user) {
   return toProfile(user, await loadStats(user._id));
 }
 
+const upsertMember = (id, { username, email, role }) =>
+  Member.findByIdAndUpdate(
+    id,
+    { $setOnInsert: { username, email, role, displayName: username } },
+    { upsert: true, returnDocument: 'after' },
+  );
+
+export async function ensureMember(id, account) {
+  try {
+    return await toMe(await upsertMember(id, account));
+  } catch (err) {
+    if (err.code !== 11000) throw err;
+  }
+  // A registration whose reply was lost leaves a Member with no User behind it.
+  await Member.deleteMany({
+    _id: { $ne: id },
+    $or: [{ username: account.username }, { email: account.email }],
+  }).collation({ locale: 'en', strength: 2 });
+  return toMe(await upsertMember(id, account));
+}
+
 export async function getMe(userId) {
-  const user = await User.findById(userId);
+  const user = await Member.findById(userId);
   if (!user) throw ApiError.unauthorized();
   return toMe(user);
 }
 
 export async function updateMe(userId, input) {
-  const user = await User.findById(userId);
+  const user = await Member.findById(userId);
   if (!user) throw ApiError.unauthorized();
 
   if (input.avatarUploadId) {
@@ -128,7 +149,7 @@ export async function updateMe(userId, input) {
 }
 
 export async function findByUsername(username) {
-  const user = await User.findOne({ username }).collation({ locale: 'en', strength: 2 });
+  const user = await Member.findOne({ username }).collation({ locale: 'en', strength: 2 });
   if (!user) throw ApiError.notFound('User not found');
   return user;
 }

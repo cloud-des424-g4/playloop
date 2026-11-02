@@ -25,7 +25,7 @@ const cardSchema = new mongoose.Schema({
 const reviewSchema = new mongoose.Schema(
   {
     game: { type: ObjectId, ref: 'Game', required: true },
-    reviewer: { type: ObjectId, ref: 'User', required: true },
+    reviewer: { type: ObjectId, ref: 'Member', required: true },
     gameVersion: { type: String, required: true },
     origin: { type: String, enum: REVIEW_ORIGINS, default: 'browse' },
     status: { type: String, enum: REVIEW_STATUSES, default: 'in_progress' },
