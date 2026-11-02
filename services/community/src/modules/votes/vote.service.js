@@ -7,6 +7,7 @@ import {
   votePoints,
 } from '../reputation/reputation.service.js';
 import { Review } from '../reviews/review.model.js';
+import { saveChanges } from '../../utils/saveChanges.js';
 import { Vote } from './vote.model.js';
 
 async function visibleReview(reviewId) {
@@ -61,9 +62,7 @@ async function applyVote(review, userId, nextValue) {
       Vote.countDocuments({ review: review._id, value: 1 }).session(session),
       Vote.countDocuments({ review: review._id, value: -1 }).session(session),
     ]);
-    review.helpfulCount = helpfulCount;
-    review.notHelpfulCount = notHelpfulCount;
-    await review.save({ session });
+    await saveChanges(review, { helpfulCount, notHelpfulCount }, session);
     const badges = await awardAchievements(review.reviewer._id, session);
     await notifyProgress(
       review.reviewer._id,

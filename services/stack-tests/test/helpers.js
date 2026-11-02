@@ -68,3 +68,31 @@ export function createSubmittedReview(game, reviewer, overrides = {}) {
     ...overrides,
   });
 }
+
+export function createReadyReview(game, reviewer) {
+  const done = new Date();
+  return createSubmittedReview(game, reviewer, {
+    status: 'in_progress',
+    submittedAt: null,
+    firstImpression: {
+      completedAt: done,
+      answers: [
+        { questionId: 'impression', text: 'Looks stormy.' },
+        { questionId: 'difficulty', optionId: 'challenging' },
+        { questionId: 'strength', optionId: 'visuals' },
+        { questionId: 'audience', optionId: 'experienced' },
+        { questionId: 'excitement', number: 4 },
+      ],
+    },
+    playtest: { acceptedMissionIds: ['m1', 'm2'], playedSeconds: 600, completedAt: done },
+    developerAnswers: { answers: [{ questionId: 'dq1', text: 'Yes' }], completedAt: done },
+    finalVerdict: {
+      comparison: 'better',
+      changeText: 'Better than expected.',
+      enjoyment: 5,
+      improveCategory: 'ui',
+      improveText: 'Bigger map icons.',
+      completedAt: done,
+    },
+  });
+}

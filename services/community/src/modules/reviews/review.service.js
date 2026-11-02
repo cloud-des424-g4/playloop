@@ -6,6 +6,7 @@ import { reactionSummaries } from '../discussions/discussion.service.js';
 import { toUserSummary, USER_SUMMARY_FIELDS } from '../users/user.service.js';
 import { Game } from '../games/game.model.js';
 import { notify } from '../outbox/outbox.service.js';
+import { saveChanges } from '../../utils/saveChanges.js';
 import {
   adjustReputation,
   awardAchievements,
@@ -252,8 +253,7 @@ export async function submitReview(reviewId, userId) {
   throwIfProblems(submitProblems(review), 'Finish every step before submitting');
 
   await mongoose.connection.transaction(async (session) => {
-    review.set({ status: 'submitted', submittedAt: new Date() });
-    await review.save({ session });
+    await saveChanges(review, { status: 'submitted', submittedAt: new Date() }, session);
     await Game.updateOne({ _id: review.game._id }, { $inc: { reviewCount: 1 } }, { session });
   });
   const badges = await awardAchievements(review.reviewer._id);
@@ -377,9 +377,14 @@ export async function setFeedbackStatus(reviewId, userId, status) {
       { review: review._id, kind: `feedback_${status}` },
       session,
     );
-    review.feedbackStatus = status;
-    review.feedbackPointsApplied = alreadyApplied + (progress?.applied ?? 0);
-    await review.save({ session });
+    await saveChanges(
+      review,
+      {
+        feedbackStatus: status,
+        feedbackPointsApplied: alreadyApplied + (progress?.applied ?? 0),
+      },
+      session,
+    );
     badges = await awardAchievements(review.reviewer._id, session);
     await notifyProgress(
       review.reviewer._id,

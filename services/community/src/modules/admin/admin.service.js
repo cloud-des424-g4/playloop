@@ -6,6 +6,7 @@ import { Featured } from '../games/featured.model.js';
 import { Game } from '../games/game.model.js';
 import { toGameCard } from '../games/game.service.js';
 import { notify } from '../outbox/outbox.service.js';
+import { saveChanges } from '../../utils/saveChanges.js';
 import { getConfig, toConfig, updateConfig } from '../meta/config.service.js';
 import { reverseReviewReputation } from '../reputation/reputation.service.js';
 import { Report } from '../reports/report.model.js';
@@ -237,12 +238,14 @@ export async function removeContent(targetType, targetId, adminId) {
       await Review.updateOne({ _id: doc.review }, { $inc: { replyCount: -1 } }, { session });
     }
     if (targetType === 'game') {
-      doc.deletedAt = new Date();
       await Review.deleteMany({ game: doc._id, status: 'in_progress' }).session(session);
     }
-    doc.removedAt = new Date();
-    doc.hiddenAt = null;
-    await doc.save({ session });
+    const removedAt = new Date();
+    await saveChanges(
+      doc,
+      { removedAt, hiddenAt: null, ...(targetType === 'game' && { deletedAt: removedAt }) },
+      session,
+    );
   });
 }
 

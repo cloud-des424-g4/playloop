@@ -3,7 +3,13 @@ import request from 'supertest';
 import { createApp, settle, withServiceDown } from './stack.js';
 import { notify } from '../../community/src/modules/outbox/outbox.service.js';
 import { Notification } from '../../notifications/src/modules/notifications/notification.model.js';
-import { authCookie, createPublishedGame, createSubmittedReview, createUser } from './helpers.js';
+import {
+  authCookie,
+  createPublishedGame,
+  createReadyReview,
+  createSubmittedReview,
+  createUser,
+} from './helpers.js';
 
 const app = createApp();
 const as = (user) => ({ Cookie: authCookie(user) });
@@ -22,34 +28,6 @@ const inbox = async (user, query = '') => {
   await settle();
   return request(app).get(`/api/me/notifications${query}`).set(as(user));
 };
-
-function readyToSubmit() {
-  const done = new Date();
-  return createSubmittedReview(game, reviewer, {
-    status: 'in_progress',
-    submittedAt: null,
-    firstImpression: {
-      completedAt: done,
-      answers: [
-        { questionId: 'impression', text: 'Looks stormy.' },
-        { questionId: 'difficulty', optionId: 'challenging' },
-        { questionId: 'strength', optionId: 'visuals' },
-        { questionId: 'audience', optionId: 'experienced' },
-        { questionId: 'excitement', number: 4 },
-      ],
-    },
-    playtest: { acceptedMissionIds: ['m1', 'm2'], playedSeconds: 600, completedAt: done },
-    developerAnswers: { answers: [{ questionId: 'dq1', text: 'Yes' }], completedAt: done },
-    finalVerdict: {
-      comparison: 'better',
-      changeText: 'Better than expected.',
-      enjoyment: 5,
-      improveCategory: 'ui',
-      improveText: 'Bigger map icons.',
-      completedAt: done,
-    },
-  });
-}
 
 describe('details from Community', () => {
   async function replyNote() {
@@ -89,7 +67,7 @@ describe('details from Community', () => {
 
 describe('triggers', () => {
   it('tells the developer about a new review', async () => {
-    const review = await readyToSubmit();
+    const review = await createReadyReview(game, reviewer);
     const res = await request(app).post(`/api/reviews/${review._id}/submit`).set(as(reviewer));
     expect(res.status).toBe(200);
 
