@@ -3,7 +3,7 @@ import { InvokeCommand } from '@aws-sdk/client-lambda';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { env } from '../../config/env.js';
 import { lambda } from '../../config/lambda.js';
-import { s3 } from '../../config/s3.js';
+import { s3Presign } from '../../config/s3.js';
 import { ApiError, logger } from '@playloop/kit';
 import { notify } from '../outbox/outbox.service.js';
 import { Game } from '../games/game.model.js';
@@ -146,7 +146,7 @@ export async function downloadLink(gameId, user, buildId) {
 
   const expiresIn = 15 * 60;
   const url = await getSignedUrl(
-    s3,
+    s3Presign,
     new GetObjectCommand({
       Bucket: build.bucket,
       Key: build.key,

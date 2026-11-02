@@ -1,6 +1,107 @@
 name: playloop
 
+x-service: &service
+  depends_on:
+    mongo:
+      condition: service_healthy
+  restart: unless-stopped
+
+x-storage-service: &storage-service
+  depends_on:
+    mongo:
+      condition: service_healthy
+    storage-init:
+      condition: service_completed_successfully
+  restart: unless-stopped
+
+x-service-env: &service-env
+  NODE_ENV: development
+  LOG_LEVEL: info
+  JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret}
+  INTERNAL_SERVICE_SECRET: ${INTERNAL_SERVICE_SECRET:-dev-service-secret}
+  CLIENT_ORIGIN: http://localhost:5173
+  IDENTITY_URL: http://identity:4001
+  COMMUNITY_URL: http://community:4002
+  NOTIFICATIONS_URL: http://notifications:4003
+  MEDIA_URL: http://media:4004
+
+x-storage-env: &storage-env
+  AWS_REGION: ap-southeast-1
+  AWS_ACCESS_KEY_ID: playloop
+  AWS_SECRET_ACCESS_KEY: playloop-secret
+  S3_ENDPOINT: http://storage:9000
+  S3_PUBLIC_ENDPOINT: http://localhost:9000
+  S3_MEDIA_BUCKET: playloop-local-media
+  S3_BUILDS_BUCKET: playloop-local-builds
+  S3_PLAY_BUCKET: playloop-local-play
+  MEDIA_CDN_URL: http://localhost:9000/playloop-local-media
+  PLAY_CDN_URL: http://localhost:9000/playloop-local-play
+
 services:
+  gateway:
+    build: services/gateway
+    ports:
+      - '4000:80'
+    depends_on:
+      identity:
+        condition: service_healthy
+      community:
+        condition: service_healthy
+      notifications:
+        condition: service_healthy
+      media:
+        condition: service_healthy
+
+  identity:
+    <<: *service
+    build:
+      context: .
+      dockerfile: services/Dockerfile
+      args:
+        SERVICE: identity
+    environment:
+      <<: *service-env
+      PORT: 4001
+      MONGODB_URI: mongodb://mongo:27017/playloop_identity?directConnection=true
+      SEED_PASSWORD: ${SEED_PASSWORD:-}
+
+  community:
+    <<: *storage-service
+    build:
+      context: .
+      dockerfile: services/Dockerfile
+      args:
+        SERVICE: community
+    environment:
+      <<: [*service-env, *storage-env]
+      PORT: 4002
+      MONGODB_URI: mongodb://mongo:27017/playloop_community?directConnection=true
+      INTERNAL_WEBHOOK_SECRET: ${INTERNAL_WEBHOOK_SECRET:-dev-webhook-secret}
+
+  notifications:
+    <<: *service
+    build:
+      context: .
+      dockerfile: services/Dockerfile
+      args:
+        SERVICE: notifications
+    environment:
+      <<: *service-env
+      PORT: 4003
+      MONGODB_URI: mongodb://mongo:27017/playloop_notifications?directConnection=true
+
+  media:
+    <<: *storage-service
+    build:
+      context: .
+      dockerfile: services/Dockerfile
+      args:
+        SERVICE: media
+    environment:
+      <<: [*service-env, *storage-env]
+      PORT: 4004
+      MONGODB_URI: mongodb://mongo:27017/playloop_media?directConnection=true
+
   mongo:
     image: mongo:8.0
     command: ['--replSet', 'rs0', '--bind_ip_all']

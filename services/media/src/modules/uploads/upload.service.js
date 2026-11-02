@@ -7,7 +7,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { env } from '../../config/env.js';
-import { s3 } from '../../config/s3.js';
+import { s3, s3Presign } from '../../config/s3.js';
 import { ApiError, internalClient } from '@playloop/kit';
 import { UPLOAD_RULES } from '@playloop/shared';
 import { mediaUrl } from '../../utils/mediaUrl.js';
@@ -85,7 +85,7 @@ export async function createUpload(userId, input) {
   const expiresAt = new Date(Date.now() + HOUR);
   if (upload.method === 'single') {
     const url = await getSignedUrl(
-      s3,
+      s3Presign,
       new PutObjectCommand({
         Bucket: bucket,
         Key: upload.key,
@@ -114,7 +114,7 @@ export async function createUpload(userId, input) {
     Array.from({ length: partCount }, async (_, index) => ({
       partNumber: index + 1,
       url: await getSignedUrl(
-        s3,
+        s3Presign,
         new UploadPartCommand({
           Bucket: bucket,
           Key: upload.key,

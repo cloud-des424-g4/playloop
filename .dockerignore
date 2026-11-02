@@ -8,5 +8,6 @@
 .github
 docs/*
 !docs/api
-server/test
+services/stack-tests/test
+services/stack-tests/smoke.js
 *.md

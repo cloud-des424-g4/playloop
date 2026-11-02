@@ -2,7 +2,7 @@
 
 Reciprocal playtesting platform for indie game developers.
 
-The API is an Express server. Local MongoDB and file storage run in Docker. The client app is not part of this setup.
+The API is four Node services behind an Nginx gateway: Identity, Community, Notifications and Media. Each service has its own MongoDB database, and everything runs in Docker. The client app is not part of this setup.
 
 ## Requirements
 
@@ -15,14 +15,10 @@ From the repo root:
 
 ```sh
 npm install
-copy server\.env.example server\.env
-npm run services:up
 npm run dev
 ```
 
-On macOS or Linux, copy the env file with `cp server/.env.example server/.env`.
-
-`services:up` starts MongoDB on port 27017 (replica set `rs0`) and local S3-compatible storage on port 9000, then creates the media, builds, and play buckets. `dev` starts the API with `server/.env` and restarts it when server files change.
+`dev` builds the images and starts the gateway on port 4000, the four services, MongoDB on port 27017 (replica set `rs0`) and local S3-compatible storage on port 9000. The service ports stay private to the Compose network. Compose reads secrets from an optional `.env` in the repo root. Every value has a local default, and `.env.example` lists them.
 
 | URL                                         | What it is                                                 |
 | ------------------------------------------- | ---------------------------------------------------------- |
@@ -31,27 +27,29 @@ On macOS or Linux, copy the env file with `cp server/.env.example server/.env`.
 | http://localhost:4000/api/docs/openapi.json | OpenAPI document                                           |
 | http://localhost:4000/api/health            | `{ "status": "ok", "db": "connected" }` when MongoDB is up |
 
-Stop the API with Ctrl+C. Stop the containers with:
+Stop the stack with Ctrl+C, then remove the containers with:
 
 ```sh
 npm run services:down
 ```
 
-Run the server tests with `npm test`.
+Run the tests with `npm test`. They start all four services in one process, and the services call each other over real HTTP.
 
-## Seed demo data (local MongoDB or Atlas)
+With the stack running and seeded, `SEED_PASSWORD=<password> npm run smoke` runs one full journey through the gateway, using the password from the seed.
 
-Set `MONGODB_URI` in `server/.env` to the database you want to seed, then run from the repo root:
+## Seed demo data
+
+With the stack running, from the repo root:
 
 ```sh
 npm run seed
 ```
 
-This loads `server/.env` and inserts three regular demo accounts, two published sample game listings, and default app configuration if missing. It preserves existing records, passwords, and edits; rerunning does not duplicate seed records. Demo seeding is disabled for `NODE_ENV=production`.
+This seeds Identity first, then Community. It inserts four demo accounts, two published sample game listings and default app configuration if missing. It keeps existing records, passwords and edits, so rerunning does not duplicate anything. Demo seeding is disabled for `NODE_ENV=production`.
 
-Accounts: `developer@seed.example.com`, `creator@seed.example.com`, and `tester@seed.example.com`. A random password is printed for newly created accounts; save it to log in using the API. Optionally set `SEED_PASSWORD` in `server/.env` (at least 12 characters, at most 72 bytes) before the first run. Rerunning does not reset passwords. No admin accounts are created.
+Accounts: `developer@seed.example.com`, `creator@seed.example.com`, `tester@seed.example.com` and `admin@seed.example.com`, which has the admin role. A random password is printed for newly created accounts. To choose it, set `SEED_PASSWORD` in the root `.env` (at least 12 characters, at most 72 bytes) before the first run. Rerunning does not reset passwords.
 
-Games contain placeholder URLs (`https://example.com`) and no uploaded images or playable builds. Replace those through the normal game workflow when real assets are available. Reviews are not seeded. The script writes to the database selected by `MONGODB_URI`; include `/playloop` before the connection string's `?` if that is your intended database. Do not commit `.env` or demo passwords.
+Games contain placeholder URLs (`https://example.com`) and no uploaded images or playable builds. Reviews are not seeded. Do not commit `.env` or demo passwords.
 
 ## View the API docs
 
@@ -59,7 +57,7 @@ Start the API with `npm run dev`, then open http://localhost:4000/api/docs in a 
 
 The same document as JSON is at http://localhost:4000/api/docs/openapi.json. The source file is `docs/api/openapi.yaml`.
 
-These pages are served only when `NODE_ENV` is not `production`. The example env file sets `development`.
+These pages are served only when `NODE_ENV` is not `production`. Compose sets `development`.
 
 ## API
 
