@@ -29,6 +29,10 @@ jobs:
     needs: backend
     steps:
       - uses: actions/checkout@v5
+      - name: Validate EC2 deployment configuration
+        run: |
+          docker compose --env-file .env.ec2.example -f docker-compose.ec2.yml config --quiet
+          docker compose --env-file .env.ec2.example -f docker-compose.ec2.yml -f docker-compose.cloudwatch.yml config --quiet
       - run: docker compose build
 
   smoke:

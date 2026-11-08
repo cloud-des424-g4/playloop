@@ -83,4 +83,4 @@ curl.exe -b cookies.txt http://localhost:4000/api/me
 
 ## Deploy to AWS
 
-See [infra/README.md](infra/README.md) for the step-by-step deploy (Atlas, SAM stack, App Runner, Amplify).
+See [infra/README.md](infra/README.md) for the EC2 deployment (Docker Compose, Atlas, S3/CloudFront, Lambda, CloudWatch and Amplify). Use the standalone `docker-compose.ec2.yml` for AWS; `docker-compose.yml` remains the local development stack.
