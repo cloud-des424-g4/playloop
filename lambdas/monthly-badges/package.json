@@ -7,5 +7,8 @@
   "main": "src/index.js",
   "scripts": {
     "test": "node --test"
+  },
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.1164.0"
   }
 }

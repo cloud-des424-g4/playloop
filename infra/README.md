@@ -50,8 +50,14 @@ backups; it does not satisfy a production requirement for daily managed backups.
 
 ## 3. Storage, CDN, Lambdas and log group
 
-From `infra/` on the workstation, generate and save a random webhook secret of
-at least 32 characters, then run (examples here use Bash):
+Before deploying, store a random webhook secret of at least 32 characters in an
+existing Secrets Manager secret in the stack's account and region. Use a dedicated
+**plaintext SecretString** (not JSON or the EC2 configuration file), encrypted with
+the default AWS managed `aws/secretsmanager` key. Set the API's
+`INTERNAL_WEBHOOK_SECRET` to the exact same value. Use a secure secret-entry workflow;
+never put the value in shell arguments, SAM configuration, logs or Git.
+
+From `infra/` on the workstation, run (examples here use Bash):
 
 ```bash
 sam build
@@ -59,14 +65,24 @@ sam deploy --config-env dev --parameter-overrides \
   Env=dev \
   ClientOrigins=http://localhost:5173 \
   ApiUrl=https://api.example.com \
-  InternalWebhookSecret=YOUR_SAVED_WEBHOOK_SECRET
+  InternalWebhookSecretArn=YOUR_EXISTING_WEBHOOK_SECRET_FULL_ARN
 aws cloudformation describe-stacks --stack-name playloop-dev \
   --region ap-southeast-1 --query 'Stacks[0].Outputs' --output table
 ```
 
 `ApiUrl` is the public HTTPS gateway base URL, with no `/api` suffix. The API may
-not be live yet; callbacks will work after EC2 starts. Keep the webhook secret
-private; the parameter is `NoEcho`, but pasted commands may enter shell history.
+not be live yet; callbacks will work after EC2 starts. `InternalWebhookSecretArn`
+replaces the old value parameter `InternalWebhookSecret`; remove the old override
+from any saved SAM configuration. Only the full ARN enters Lambda environment
+variables. Each invocation reads `AWSCURRENT` using `GetSecretValue`, retaining the
+value only in memory for that invocation. Each Lambda role can read only that ARN;
+it cannot list, create or update secrets. The stack does not create the secret.
+Customer-managed KMS keys require an explicit, key-scoped `kms:Decrypt` policy and
+key-policy access; this template grants neither and uses the default key workflow.
+The Node.js Lambda runtime provides the AWS SDK for the esbuild function's existing
+`@aws-sdk/*` external setting; SAM packages the monthly function's dependency.
+
+Validate locally before deployment with `sam validate --lint --template-file template.yaml`.
 
 | Output               | EC2 environment/configuration                      |
 | -------------------- | -------------------------------------------------- |
@@ -117,7 +133,8 @@ repository access method). All commands below run from that directory.
 
 Fill in `.env.ec2.example` using the SAM outputs and Atlas URIs. Use different,
 random values for `JWT_SECRET` and `INTERNAL_SERVICE_SECRET`, shared across all
-four services. `INTERNAL_WEBHOOK_SECRET` must match the SAM parameter.
+four services. `INTERNAL_WEBHOOK_SECRET` must match the plaintext value in the
+dedicated webhook secret referenced by SAM's `InternalWebhookSecretArn`.
 Use the exact frontend HTTPS origin without a trailing slash for `CLIENT_ORIGIN`.
 
 Store the filled file contents as a **plaintext** Secrets Manager secret, for
@@ -136,7 +153,11 @@ chmod 600 .env.ec2
 The filled file stays on EC2 as a protected runtime configuration, ignored by Git
 and excluded from Docker build contexts. Do not paste it into logs. Single-quote
 URIs/secrets as shown in the example to prevent Compose dollar interpolation.
-Secret rotation requires fetching the file again and recreating the containers.
+Secret rotation requires updating both the dedicated webhook secret and the EC2
+configuration secret, fetching the file again and recreating the containers.
+Lambdas read the current version on each invocation without redeployment. Coordinate
+rotation with API container replacement and allow in-flight invocations to finish;
+the signature protocol accepts one key at a time.
 
 Validate without printing the resolved secrets, then start:
 
@@ -218,7 +239,7 @@ requests on the frontend origin through `/api`, and test that Amplify forwards
 Once Amplify gives you its final URL, update `CLIENT_ORIGIN` in the configuration
 secret, fetch it again and recreate the EC2 services. Also redeploy SAM with
 `ClientOrigins=https://frontend.YOUR_APP_ID.amplifyapp.com`, the same `ApiUrl`,
-`Env` and webhook secret. This updates S3 CORS for direct browser uploads.
+`Env` and `InternalWebhookSecretArn`. This updates S3 CORS for direct browser uploads.
 
 ## 7. Verify, update and troubleshoot
 

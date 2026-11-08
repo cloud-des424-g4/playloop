@@ -1,10 +1,17 @@
-import { test } from 'node:test';
+import { afterEach, beforeEach, mock, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createHmac } from 'node:crypto';
+import { createHmac, randomBytes } from 'node:crypto';
 import { createServer } from 'node:http';
+import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
 import { handler } from '../src/index.js';
 
-const SECRET = 'test-webhook-secret';
+const SECRET = randomBytes(32).toString('hex');
+
+beforeEach(() => {
+  process.env.INTERNAL_WEBHOOK_SECRET_ARN = 'test-secret-id';
+  mock.method(SecretsManagerClient.prototype, 'send', async () => ({ SecretString: SECRET }));
+});
+afterEach(() => mock.restoreAll());
 
 async function runAgainstApi(status) {
   const calls = [];
@@ -18,7 +25,6 @@ async function runAgainstApi(status) {
   });
   await new Promise((resolve) => api.listen(0, '127.0.0.1', resolve));
   process.env.API_URL = `http://127.0.0.1:${api.address().port}`;
-  process.env.INTERNAL_WEBHOOK_SECRET = SECRET;
   try {
     await handler();
     return calls;

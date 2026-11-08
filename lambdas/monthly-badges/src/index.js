@@ -1,7 +1,8 @@
 import { createHmac } from 'node:crypto';
+import { getWebhookSecret } from './webhook-secret.js';
 
 export async function handler() {
-  const signature = createHmac('sha256', process.env.INTERNAL_WEBHOOK_SECRET)
+  const signature = createHmac('sha256', await getWebhookSecret())
     .update('')
     .digest('hex');
   const res = await fetch(`${process.env.API_URL}/api/internal/badges/monthly`, {

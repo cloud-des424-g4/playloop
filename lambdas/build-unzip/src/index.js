@@ -8,6 +8,7 @@ import { promisify } from 'node:util';
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import yauzl from 'yauzl';
 import { BuildError, headersFor, planFiles } from './plan.js';
+import { getWebhookSecret } from './webhook-secret.js';
 
 const s3 = new S3Client({});
 const openZip = promisify(yauzl.open);
@@ -53,11 +54,9 @@ async function extract(file, buildId) {
   }
 }
 
-async function report(buildId, result) {
+async function report(buildId, result, secret) {
   const body = JSON.stringify(result);
-  const signature = createHmac('sha256', process.env.INTERNAL_WEBHOOK_SECRET)
-    .update(body)
-    .digest('hex');
+  const signature = createHmac('sha256', secret).update(body).digest('hex');
   const res = await fetch(`${process.env.API_URL}/api/internal/builds/${buildId}/status`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-PlayLoop-Signature': signature },
@@ -67,16 +66,17 @@ async function report(buildId, result) {
 }
 
 export async function handler({ buildId, bucket, key }) {
+  const secret = await getWebhookSecret();
   const file = join(tmpdir(), `${buildId}.zip`);
   try {
     const object = await s3.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
     await pipeline(object.Body, createWriteStream(file));
     const entryPath = await extract(file, buildId);
-    await report(buildId, { status: 'ready', entryPath });
+    await report(buildId, { status: 'ready', entryPath }, secret);
   } catch (err) {
     console.error(JSON.stringify({ buildId, error: err.message }));
     const error = err instanceof BuildError ? err.message : 'Could not process this build';
-    await report(buildId, { status: 'failed', error });
+    await report(buildId, { status: 'failed', error }, secret);
   } finally {
     await rm(file, { force: true });
   }
