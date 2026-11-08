@@ -1,0 +1,26 @@
+# Optional EC2 override. The SAM stack creates the log group and IAM policy.
+x-cloudwatch: &cloudwatch
+  driver: awslogs
+  options:
+    awslogs-region: ${AWS_REGION:-ap-southeast-1}
+    awslogs-group: ${CLOUDWATCH_LOG_GROUP:?Set CLOUDWATCH_LOG_GROUP from the SAM outputs}
+    tag: '{{.Name}}/{{.ID}}'
+    # Compose merges logging options; remove the local driver's options.
+    max-size: !reset null
+    max-file: !reset null
+    mode: non-blocking
+    max-buffer-size: '4m'
+
+services:
+  https:
+    logging: *cloudwatch
+  gateway:
+    logging: *cloudwatch
+  identity:
+    logging: *cloudwatch
+  community:
+    logging: *cloudwatch
+  notifications:
+    logging: *cloudwatch
+  media:
+    logging: *cloudwatch

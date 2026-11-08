@@ -1,0 +1,13 @@
+{
+	email {$ACME_EMAIL}
+}
+
+{$API_DOMAIN} {
+	log {
+		output stdout
+		format json
+	}
+
+	# Nginx keeps the API routing and /internal protection in one place.
+	reverse_proxy gateway:80
+}

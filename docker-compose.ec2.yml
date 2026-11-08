@@ -1,0 +1,124 @@
+# Standalone production stack. Do not merge with docker-compose.yml.
+name: playloop-ec2
+
+x-runtime: &runtime
+  restart: unless-stopped
+  init: true
+  stop_grace_period: 20s
+  logging:
+    driver: local
+    options:
+      max-size: '10m'
+      max-file: '3'
+
+x-service-env: &service-env
+  NODE_ENV: production
+  LOG_LEVEL: ${LOG_LEVEL:-info}
+  JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
+  INTERNAL_SERVICE_SECRET: ${INTERNAL_SERVICE_SECRET:?Set INTERNAL_SERVICE_SECRET}
+  CLIENT_ORIGIN: ${CLIENT_ORIGIN:?Set CLIENT_ORIGIN to the Amplify origin}
+  # Caddy and Nginx are the two trusted proxies. Neither backend port is published.
+  TRUST_PROXY_HOPS: '2'
+  IDENTITY_URL: http://identity:4001
+  COMMUNITY_URL: http://community:4002
+  NOTIFICATIONS_URL: http://notifications:4003
+  MEDIA_URL: http://media:4004
+
+x-storage-env: &storage-env
+  AWS_REGION: ${AWS_REGION:-ap-southeast-1}
+  S3_MEDIA_BUCKET: ${S3_MEDIA_BUCKET:?Set S3_MEDIA_BUCKET from the SAM outputs}
+  S3_BUILDS_BUCKET: ${S3_BUILDS_BUCKET:?Set S3_BUILDS_BUCKET from the SAM outputs}
+  S3_PLAY_BUCKET: ${S3_PLAY_BUCKET:?Set S3_PLAY_BUCKET from the SAM outputs}
+  MEDIA_CDN_URL: ${MEDIA_CDN_URL:?Set MEDIA_CDN_URL from the SAM outputs}
+  PLAY_CDN_URL: ${PLAY_CDN_URL:?Set PLAY_CDN_URL from the SAM outputs}
+
+services:
+  https:
+    <<: *runtime
+    image: caddy:2-alpine
+    environment:
+      API_DOMAIN: ${API_DOMAIN:?Set API_DOMAIN to the API DNS hostname}
+      ACME_EMAIL: ${ACME_EMAIL:?Set ACME_EMAIL for certificate renewal notices}
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./infra/ec2/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      gateway:
+        condition: service_healthy
+
+  gateway:
+    <<: *runtime
+    build: services/gateway
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://127.0.0.1/api/health || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    depends_on:
+      identity:
+        condition: service_healthy
+      community:
+        condition: service_healthy
+      notifications:
+        condition: service_healthy
+      media:
+        condition: service_healthy
+
+  identity:
+    <<: *runtime
+    build:
+      context: .
+      dockerfile: services/Dockerfile
+      args:
+        SERVICE: identity
+    environment:
+      <<: *service-env
+      PORT: 4001
+      MONGODB_URI: ${MONGODB_IDENTITY_URI:?Set MONGODB_IDENTITY_URI}
+
+  community:
+    <<: *runtime
+    build:
+      context: .
+      dockerfile: services/Dockerfile
+      args:
+        SERVICE: community
+    environment:
+      <<: [*service-env, *storage-env]
+      PORT: 4002
+      MONGODB_URI: ${MONGODB_COMMUNITY_URI:?Set MONGODB_COMMUNITY_URI}
+      INTERNAL_WEBHOOK_SECRET: ${INTERNAL_WEBHOOK_SECRET:?Set INTERNAL_WEBHOOK_SECRET}
+      BUILD_UNZIP_FUNCTION: ${BUILD_UNZIP_FUNCTION:?Set BUILD_UNZIP_FUNCTION from the SAM outputs}
+
+  notifications:
+    <<: *runtime
+    build:
+      context: .
+      dockerfile: services/Dockerfile
+      args:
+        SERVICE: notifications
+    environment:
+      <<: *service-env
+      PORT: 4003
+      MONGODB_URI: ${MONGODB_NOTIFICATIONS_URI:?Set MONGODB_NOTIFICATIONS_URI}
+
+  media:
+    <<: *runtime
+    build:
+      context: .
+      dockerfile: services/Dockerfile
+      args:
+        SERVICE: media
+    environment:
+      <<: [*service-env, *storage-env]
+      PORT: 4004
+      MONGODB_URI: ${MONGODB_MEDIA_URI:?Set MONGODB_MEDIA_URI}
+
+volumes:
+  caddy-data:
+  caddy-config:

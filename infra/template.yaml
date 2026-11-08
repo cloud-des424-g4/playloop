@@ -12,7 +12,7 @@ Parameters:
     Description: Frontend origins allowed to upload straight to S3, e.g. https://main.d123.amplifyapp.com
   ApiUrl:
     Type: String
-    Description: Base URL of the API that the Lambdas call, e.g. https://abc.ap-southeast-1.awsapprunner.com
+    Description: Public HTTPS base URL of the EC2 API gateway, e.g. https://api.example.com
   InternalWebhookSecret:
     Type: String
     NoEcho: true
@@ -20,6 +20,25 @@ Parameters:
     Description: Same value as INTERNAL_WEBHOOK_SECRET on the API
 
 Resources:
+  BackendLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /playloop/${Env}/backend
+      RetentionInDays: 14
+
+  BackendLogsPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: Attach to the EC2 instance role for Docker CloudWatch logging
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: !GetAtt BackendLogs.Arn
+
   MediaBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -245,7 +264,7 @@ Resources:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       ManagedPolicyName: !Sub playloop-${Env}-api
-      Description: Attach to the App Runner instance role
+      Description: Attach to the EC2 instance role
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -283,5 +302,11 @@ Outputs:
     Description: BUILD_UNZIP_FUNCTION
     Value: !Ref BuildUnzipFunction
   ApiAccessPolicyArn:
-    Description: Attach to the App Runner instance role
+    Description: Attach to the EC2 instance role
     Value: !Ref ApiAccessPolicy
+  BackendLogGroup:
+    Description: CLOUDWATCH_LOG_GROUP for the Docker logging override
+    Value: !Ref BackendLogs
+  BackendLogsPolicyArn:
+    Description: Attach to the EC2 instance role for Docker CloudWatch logging
+    Value: !Ref BackendLogsPolicy
