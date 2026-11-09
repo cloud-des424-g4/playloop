@@ -20,7 +20,7 @@ import {
   user,
 } from '../test/featureFixtures.js';
 vi.mock('../lib/api.js', () => ({
-  api: { get: vi.fn(), put: vi.fn(), post: vi.fn(), delete: vi.fn() },
+  api: { get: vi.fn(), put: vi.fn(), patch: vi.fn(), post: vi.fn(), delete: vi.fn() },
 }));
 function mount(element, path = '/', route = path) {
   const router = createMemoryRouter(
@@ -73,7 +73,7 @@ describe('My Games', () => {
 describe('Form builder', () => {
   it('keeps edits across tabs and saves all three sections without response metadata', async () => {
     const u = userEvent.setup();
-    api.put.mockImplementation(async (_, body) => ({ ...body, revision: 2 }));
+    api.patch.mockImplementation(async (_, body) => ({ ...body, revision: 2 }));
     mount(<FormBuilderPage />, '/my-games/game-1/form', '/my-games/:gameId/form');
     const question = (await screen.findAllByLabelText('Question'))[0];
     await u.clear(question);
@@ -83,7 +83,7 @@ describe('Form builder', () => {
     await u.type(screen.getByLabelText('Farewell message'), 'Thank you, explorer!');
     await u.click(screen.getByRole('button', { name: 'Save form' }));
     expect(await screen.findByRole('status')).toHaveTextContent('saved');
-    const payload = api.put.mock.calls[0][1];
+    const payload = api.patch.mock.calls[0][1];
     expect(payload.firstImpression.questions[0].title).toBe('What caught your eye?');
     expect(payload.finalVerdict.farewellMessage).toBe('Thank you, explorer!');
     expect(payload).not.toHaveProperty('revision');
@@ -91,13 +91,13 @@ describe('Form builder', () => {
   });
   it('validates hidden sections and preserves edits after save failure', async () => {
     const u = userEvent.setup();
-    api.put.mockRejectedValue(new Error('Connection lost'));
+    api.patch.mockRejectedValue(new Error('Connection lost'));
     mount(<FormBuilderPage />, '/my-games/game-1/form', '/my-games/:gameId/form');
     await u.click(await screen.findByRole('button', { name: '+ Add a question' }));
     await u.click(screen.getByRole('tab', { name: '02 Playtest' }));
     await u.click(screen.getByRole('button', { name: 'Save form' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('First Impression, question 3');
-    expect(api.put).not.toHaveBeenCalled();
+    expect(api.patch).not.toHaveBeenCalled();
     await u.click(screen.getByRole('tab', { name: '01 First Impression' }));
     await u.type(screen.getAllByLabelText('Question')[2], 'New question');
     await u.click(screen.getByRole('button', { name: 'Save form' }));

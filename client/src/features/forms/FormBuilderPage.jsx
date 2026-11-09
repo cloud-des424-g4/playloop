@@ -60,7 +60,7 @@ function FormEditor({ initial, gameTitle, gameId }) {
     if (invalid) return;
     setSaving(true);
     try {
-      const result = await api.put(`/games/${gameId}/form`, formPayload(form));
+      const result = await api.patch(`/games/${gameId}/form`, formPayload(form));
       const next = formPayload(result);
       setForm(next);
       setSaved(JSON.stringify(next));
