@@ -106,7 +106,7 @@ export function PlaytestStep({
                   className={styles.game}
                   src={game.webPlayUrl}
                   title={`${game.title} game`}
-                  sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups"
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-popups"
                   allow="fullscreen; autoplay; gamepad"
                 />
               ) : (
