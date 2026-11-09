@@ -10,7 +10,8 @@ import yauzl from 'yauzl';
 import { BuildError, headersFor, planFiles } from './plan.js';
 import { getWebhookSecret } from './webhook-secret.js';
 
-const s3 = new S3Client({});
+// ZIP entry streams can emit small chunks; buffer them for S3 checksum framing.
+const s3 = new S3Client({ requestStreamBufferSize: 65_536 });
 const openZip = promisify(yauzl.open);
 const PARALLEL_UPLOADS = 16;
 
