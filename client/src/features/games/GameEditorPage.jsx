@@ -146,6 +146,42 @@ function GameEditor({ initial, options }) {
     return () => clearInterval(timer);
   }, []);
 
+  const processingBuildIds = game.delivery.builds
+    .filter((build) => build.status === 'processing')
+    .map((build) => build.id)
+    .join(',');
+  useEffect(() => {
+    if (!processingBuildIds) return;
+    const controller = new AbortController();
+    let timer;
+    async function refreshBuilds() {
+      try {
+        const latest = await api.get(`/games/${game.id}`, { signal: controller.signal });
+        if (!controller.signal.aborted) {
+          setGame((current) => ({
+            ...current,
+            delivery: {
+              ...current.delivery,
+              builds: current.delivery.builds.map((build) =>
+                build.status === 'processing'
+                  ? latest.delivery.builds.find((item) => item.id === build.id) ?? build
+                  : build,
+              ),
+            },
+          }));
+        }
+      } catch {
+        // Retry transient failures without interrupting edits.
+      } finally {
+        if (!controller.signal.aborted) timer = setTimeout(refreshBuilds, 3000);
+      }
+    }
+    timer = setTimeout(refreshBuilds, 3000);
+    return () => {
+      controller.abort();
+      clearTimeout(timer);
+    };
+  }, [game.id, processingBuildIds]);
   async function save() {
     if (!form.title.trim()) {
       setError('Give your game a title.');
