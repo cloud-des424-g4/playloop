@@ -164,7 +164,7 @@ function GameEditor({ initial, options }) {
               ...current.delivery,
               builds: current.delivery.builds.map((build) =>
                 build.status === 'processing'
-                  ? latest.delivery.builds.find((item) => item.id === build.id) ?? build
+                  ? (latest.delivery.builds.find((item) => item.id === build.id) ?? build)
                   : build,
               ),
             },
