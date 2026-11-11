@@ -52,7 +52,9 @@ jobs:
       - run: docker compose build
 
   smoke:
-    runs-on: ubuntu-latest
+    # MongoDB 8 refuses to start on Linux kernel 6.19 and newer (SERVER-121912),
+    # which ubuntu-latest now runs. Stay on 24.04 until MongoDB ships a fix.
+    runs-on: ubuntu-24.04
     needs: docker
     env:
       SEED_PASSWORD: Smoke-test-password-123
