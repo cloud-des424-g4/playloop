@@ -103,7 +103,7 @@ services:
       MONGODB_URI: mongodb://mongo:27017/playloop_media?directConnection=true
 
   mongo:
-    image: mongo:8.0
+    image: mongo:${MONGO_VERSION:-8.0}
     command: ['--replSet', 'rs0', '--bind_ip_all']
     ports:
       - '27017:27017'
