@@ -1,0 +1,16 @@
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.value {
+  font: var(--playloop-type-heading-2);
+  color: var(--playloop-text-primary);
+}
+
+.label {
+  font: var(--playloop-type-caption);
+  color: var(--playloop-text-caption);
+}

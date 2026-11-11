@@ -1,0 +1,32 @@
+.checkbox {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  border: 1px solid var(--playloop-border-ink);
+  border-radius: var(--playloop-radius-8);
+  background: var(--playloop-surface-chip) center / 20px 20px no-repeat;
+  appearance: none;
+  cursor: pointer;
+}
+
+.checkbox:checked {
+  border-color: var(--playloop-accent-blue);
+  background-color: var(--playloop-accent-blue);
+  background-image: url('../../assets/icons/check.svg');
+}
+
+.checkbox:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.field {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--playloop-space-12);
+  min-height: 40px;
+  font: var(--playloop-type-tag);
+  color: var(--playloop-text-primary);
+  cursor: pointer;
+}

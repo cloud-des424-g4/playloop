@@ -1,0 +1,19 @@
+.link {
+  font: var(--playloop-type-button);
+  color: var(--playloop-text-link);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.sm {
+  font: var(--playloop-type-body-small);
+}
+
+.underline {
+  text-decoration: underline;
+  text-underline-position: from-font;
+}
+
+.link:hover {
+  text-decoration: underline;
+}

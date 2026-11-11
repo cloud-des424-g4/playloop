@@ -24,6 +24,22 @@ jobs:
       - run: npm run spec:lint
       - run: npm test
 
+  frontend:
+    runs-on: ubuntu-latest
+    env:
+      # The frontend job never starts MongoDB, so skip the binary download.
+      MONGOMS_DISABLE_POSTINSTALL: '1'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run lint:client
+      - run: npm run test:client
+      - run: npm run build:client
+
   docker:
     runs-on: ubuntu-latest
     needs: backend

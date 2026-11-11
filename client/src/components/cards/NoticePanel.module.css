@@ -1,0 +1,29 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-12);
+  width: 400px;
+  max-width: 100%;
+  padding: var(--playloop-space-28);
+  border-radius: var(--playloop-radius-20);
+  background: var(--playloop-surface-card);
+}
+
+.title {
+  font: var(--playloop-type-heading-3);
+  color: var(--playloop-text-primary);
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-12);
+  list-style: none;
+  font: var(--playloop-type-body-small);
+  color: var(--playloop-text-body);
+}
+
+.footer {
+  font: 500 16px / normal var(--playloop-font-mono);
+  color: var(--playloop-text-caption);
+}

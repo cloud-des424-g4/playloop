@@ -1,0 +1,188 @@
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-16);
+  width: 100%;
+  min-width: 0;
+}
+
+/* "Title / glass corner markers": a glass frame with an orange square on each corner. It is a
+   size container so the title can shrink to fit it. */
+.titleFrame {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 112px;
+  padding: var(--playloop-space-16) var(--playloop-space-32);
+  border: 3px solid var(--playloop-grid-line);
+  container-type: inline-size;
+  order: 1;
+}
+
+/* 64 px (the Figma size) whenever it fits. "Sign Up" is about 4.4 times as wide as its font size,
+   so on narrow screens the size drops to what the frame can hold instead of wrapping out of it. */
+.title {
+  font: var(--playloop-type-display);
+  font-size: min(64px, calc(100cqw / 4.5));
+  color: var(--playloop-text-inverse);
+  text-shadow: var(--playloop-shadow-title);
+  white-space: nowrap;
+}
+
+/* The orange-to-peach gradient has no Figma variable; values are copied from the frame. */
+.corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(to right, #ff3f00, #ffa082);
+}
+
+.topLeft {
+  top: -3px;
+  left: -3px;
+}
+
+.topRight {
+  top: -3px;
+  right: -3px;
+}
+
+.bottomLeft {
+  bottom: -3px;
+  left: -3px;
+}
+
+.bottomRight {
+  right: -3px;
+  bottom: -3px;
+}
+
+.message {
+  padding-inline: var(--playloop-space-32);
+  font: var(--playloop-type-body);
+  color: var(--playloop-text-inverse);
+  text-shadow: var(--playloop-shadow-text);
+  order: 2;
+}
+
+/* "Tactile PlayLoop artwork / glass leaf" (246:498). The Figma canvas is 632 x 368 px with layers at
+   fixed offsets. Every offset and size below is written as a share of that canvas (a / 632 for
+   horizontal values, a / 368 for vertical ones), so at 632 px wide it is pixel for pixel the Figma
+   layout and on narrower screens the whole artwork scales down together. */
+.artwork {
+  position: relative;
+  width: 100%;
+  max-width: 632px;
+  aspect-ratio: 632 / 368;
+  container-type: inline-size;
+  order: 4;
+}
+
+.leaf {
+  position: absolute;
+  top: calc(24 / 368 * 100%);
+  left: calc(15 / 632 * 100%);
+  width: calc(602 / 632 * 100%);
+  height: calc(322 / 368 * 100%);
+  border: 1px solid var(--playloop-border-glass);
+  /* Leaf shape: top-left and bottom-right corners only. 100 px on the 632 px canvas. */
+  border-radius: calc(100 / 632 * 100cqw) 0;
+  background: var(--playloop-surface-card);
+}
+
+.lettering {
+  position: absolute;
+  top: calc(16 / 368 * 100%);
+  left: calc(24 / 632 * 100%);
+  width: calc(568 / 632 * 100%);
+  height: calc(340.8 / 368 * 100%);
+  object-fit: cover;
+  animation: float 2s linear infinite alternate;
+}
+
+/* Figma motion on "PLAYLOOP / original 3D lettering" (246:500): 26 px bob, 2 s, ping-pong. */
+@keyframes float {
+  0% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.51, -0.009, 0.549, 1);
+  }
+
+  75% {
+    transform: translateY(calc(-26 / 632 * 100cqw));
+    animation-timing-function: cubic-bezier(0.497, 0.014, 0.532, 1);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lettering {
+    animation: none;
+  }
+}
+
+/* A bubble is a circle: its width is a share of the canvas and its height follows. The icon sits 11 px
+   inside the 1 px border, as a share of the bubble's padding box (102 px and 94 px in Figma). */
+.bubble {
+  position: absolute;
+  aspect-ratio: 1;
+  border: 1px solid var(--playloop-border-glass);
+  border-radius: 50%;
+  filter: drop-shadow(0 4px 15px rgb(0 0 0 / 25%));
+}
+
+.bubble img {
+  position: absolute;
+  object-fit: cover;
+}
+
+.rouletteBubble {
+  top: calc(252 / 368 * 100%);
+  left: calc(4 / 632 * 100%);
+  width: calc(104 / 632 * 100%);
+  background: var(--playloop-tint-lilac);
+}
+
+.rouletteBubble img {
+  top: calc(11 / 102 * 100%);
+  left: calc(11 / 102 * 100%);
+  width: calc(80 / 102 * 100%);
+  height: auto;
+}
+
+.publishBubble {
+  top: calc(4 / 368 * 100%);
+  left: calc(532 / 632 * 100%);
+  width: calc(96 / 632 * 100%);
+  background: var(--playloop-tint-lime);
+}
+
+.publishBubble img {
+  top: calc(11 / 94 * 100%);
+  left: calc(11 / 94 * 100%);
+  width: calc(72 / 94 * 100%);
+  height: auto;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--playloop-space-16);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  order: 5;
+}
+
+/* One column (see AuthPage): the pieces of the story become rows of the page grid, so the form can
+   sit between the welcome line and the artwork. */
+@media (max-width: 1100px) {
+  .intro {
+    display: contents;
+  }
+}

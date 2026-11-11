@@ -1,0 +1,28 @@
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--playloop-space-24);
+  min-height: var(--playloop-nav-height);
+  padding: var(--playloop-space-22) var(--playloop-space-38) 0 364px;
+}
+
+.link {
+  font: var(--playloop-type-nav);
+  color: var(--playloop-text-inverse);
+  text-shadow: var(--playloop-shadow-text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1100px) {
+  .nav {
+    justify-content: flex-start;
+    padding: var(--playloop-space-24) 0;
+  }
+}

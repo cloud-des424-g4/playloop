@@ -1,0 +1,28 @@
+/* Figma "Authentication content" (246:488): a 632 px story, an 80 px gap and a 600 px form. The
+   columns share the width in that 632 : 600 ratio, so at full width (1312 px) they are exactly the
+   Figma sizes and below it they shrink together instead of overflowing. */
+.page {
+  display: grid;
+  grid-template-columns: minmax(0, 632fr) minmax(0, 600fr);
+  column-gap: 80px;
+  align-items: center;
+}
+
+.formSlot {
+  min-width: 0;
+}
+
+/* One column. AuthIntro uses display: contents here, so its title, welcome line, artwork and tags
+   become rows of this grid and `order` puts the form right after the welcome line. */
+@media (max-width: 1100px) {
+  .page {
+    grid-template-columns: minmax(0, 600px);
+    justify-content: center;
+    gap: var(--playloop-space-16);
+  }
+
+  .formSlot {
+    order: 3;
+    margin-block: var(--playloop-space-16);
+  }
+}

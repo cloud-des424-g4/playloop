@@ -14,8 +14,12 @@
   "scripts": {
     "seed": "docker compose run --rm identity node services/identity/scripts/seed.js && docker compose run --rm community node services/community/scripts/seed.js",
     "dev": "docker compose up --build",
+    "dev:client": "npm run dev -w @playloop/client",
     "smoke": "node services/stack-tests/smoke.js",
     "test": "npm test -w @playloop/stack-tests -w @playloop/lambda-build-unzip -w @playloop/lambda-monthly-badges",
+    "test:client": "npm test -w @playloop/client",
+    "build:client": "npm run build -w @playloop/client",
+    "lint:client": "npm run lint -w @playloop/client",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

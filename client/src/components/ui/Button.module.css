@@ -1,0 +1,37 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--playloop-space-10);
+  padding: var(--playloop-space-8) var(--playloop-space-24);
+  border: 1px solid transparent;
+  border-radius: var(--playloop-radius-8);
+  font: var(--playloop-type-button);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.button:disabled,
+.button[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.accent {
+  background: var(--playloop-accent-orange-soft);
+  border-color: var(--playloop-border-orange);
+  color: var(--playloop-text-inverse);
+  text-shadow: var(--playloop-shadow-button-label);
+}
+
+.pink {
+  background: var(--playloop-tint-pink);
+  color: var(--playloop-deep-pink);
+}
+
+.glass {
+  background: var(--playloop-surface-chip);
+  border-color: var(--playloop-border-glass);
+  color: var(--playloop-text-primary);
+  backdrop-filter: var(--playloop-glass-soft);
+}

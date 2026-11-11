@@ -1,0 +1,18 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 60px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--playloop-radius-8);
+  background: none;
+  font: var(--playloop-type-heading-3);
+  color: var(--playloop-text-caption);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,0 +1,32 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--playloop-space-16) var(--playloop-space-48);
+  border: 0;
+  /* Asymmetric "leaf": top-left and bottom-right corners only. */
+  border-radius: var(--playloop-radius-20) 0;
+  background: var(--playloop-gradient-primary);
+  color: var(--playloop-text-primary);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.button:disabled,
+.button[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.fullWidth {
+  display: flex;
+  width: 100%;
+}
+
+.lg {
+  font: 700 31px / 1.2 var(--playloop-font-mono);
+}
+
+.md {
+  font: var(--playloop-type-button);
+}

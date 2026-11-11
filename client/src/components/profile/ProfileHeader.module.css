@@ -1,0 +1,123 @@
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--playloop-space-40);
+}
+
+.portraitCard,
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-16);
+  border: 1px solid var(--playloop-border-glass);
+  border-radius: var(--playloop-radius-20);
+  background: var(--playloop-surface-card);
+  backdrop-filter: var(--playloop-glass-soft);
+}
+
+.portraitCard {
+  width: 272px;
+  padding: var(--playloop-space-16);
+}
+
+.level {
+  font: var(--playloop-type-heading-3);
+  color: var(--playloop-text-primary);
+}
+
+.track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--playloop-surface-chip);
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--playloop-accent-orange);
+}
+
+.points {
+  font: var(--playloop-type-caption);
+  color: var(--playloop-text-caption);
+}
+
+.identity {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--playloop-space-16);
+  min-width: min(100%, 320px);
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--playloop-space-24);
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  gap: var(--playloop-space-20);
+  min-width: 0;
+  color: var(--playloop-text-inverse);
+}
+
+.displayName {
+  font: var(--playloop-type-display);
+  text-shadow: var(--playloop-shadow-title);
+}
+
+.pronouns {
+  font: var(--playloop-type-caption);
+  text-shadow: var(--playloop-shadow-text);
+}
+
+.username {
+  font: var(--playloop-type-nav);
+  color: var(--playloop-text-inverse);
+  text-shadow: var(--playloop-shadow-text);
+}
+
+.details {
+  padding: var(--playloop-space-24);
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--playloop-space-32);
+}
+
+.stat {
+  flex: 1;
+  min-width: 160px;
+}
+
+.bio {
+  font: var(--playloop-type-body);
+  color: var(--playloop-text-body);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--playloop-space-12);
+}
+
+.website {
+  align-self: flex-start;
+  font: var(--playloop-type-body);
+  color: var(--playloop-text-link);
+  text-decoration: none;
+}
+
+.website:hover {
+  text-decoration: underline;
+}

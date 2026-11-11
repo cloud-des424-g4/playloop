@@ -1,0 +1,797 @@
+/* Review flow (Figma 281:685–285:826). Values come from the frames; tokens where one exists. */
+
+/* ---- Header ("Review header", 281:711) ---- */
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--playloop-space-16);
+  min-height: var(--playloop-nav-height);
+  padding-inline: var(--playloop-space-40);
+}
+
+.logo {
+  display: block;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--playloop-space-16);
+  margin-left: auto;
+}
+
+/* ---- Screens ---- */
+
+.flow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-32);
+  padding-inline: 25px;
+}
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-32);
+  min-width: 0;
+}
+
+.stage {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--playloop-space-16);
+  min-width: 0;
+}
+
+.upper {
+  text-transform: uppercase;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-24);
+  min-width: 0;
+  padding: var(--playloop-space-48) 56px 56px;
+  border-radius: var(--playloop-radius-20);
+  background: var(--theme-card, var(--playloop-surface-card));
+  color: var(--playloop-text-primary);
+}
+
+/* Orange corner markers (Final Verdict and summary cards), as on the form builder panel. */
+.marked {
+  position: relative;
+}
+
+.marked::before,
+.marked::after {
+  content: '';
+  position: absolute;
+  right: 20px;
+  left: 20px;
+  height: 20px;
+  background:
+    var(--theme-accent-gradient, linear-gradient(90deg, #ff3f00, #ffa082)) left / 20px 20px
+      no-repeat,
+    var(--theme-accent-gradient, linear-gradient(90deg, #ff3f00, #ffa082)) right / 20px 20px
+      no-repeat;
+  pointer-events: none;
+}
+
+.marked::before {
+  top: 20px;
+}
+
+.marked::after {
+  bottom: 20px;
+}
+
+.questionTitle {
+  font: var(--playloop-type-heading-1);
+  overflow-wrap: anywhere;
+}
+
+.optional,
+.caption {
+  font: var(--playloop-type-caption);
+  color: var(--playloop-text-caption);
+}
+
+.body {
+  font: var(--playloop-type-body);
+  color: var(--playloop-text-body);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-16);
+}
+
+.hiddenLabel > label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--playloop-space-16);
+}
+
+/* Figma "primary button" instances here use 12 × 32 px padding and the 20 px label. The colours
+   follow the game's accent (gameTheme.js). */
+.next,
+.send {
+  background: var(--theme-button, var(--playloop-gradient-primary));
+  color: var(--theme-on-button, var(--playloop-text-primary));
+}
+
+.next {
+  padding: var(--playloop-space-12) var(--playloop-space-32);
+}
+
+.nav .next {
+  margin-left: auto;
+}
+
+.continue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--playloop-space-8);
+  text-align: center;
+}
+
+.onSky {
+  font: var(--playloop-type-caption);
+  color: var(--playloop-text-inverse);
+  text-shadow: var(--playloop-shadow-text);
+}
+
+.ready {
+  font: var(--playloop-type-heading-3);
+  color: var(--playloop-text-inverse);
+  text-shadow: var(--playloop-shadow-text);
+}
+
+/* ---- Answers ---- */
+
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--playloop-space-12);
+}
+
+.choice {
+  display: inline-flex;
+  border-radius: 0 var(--playloop-radius-30);
+  cursor: pointer;
+}
+
+.choice:has(input:focus-visible) {
+  box-shadow: var(--playloop-focus-ring);
+}
+
+.choice:has(input:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.choiceOutlined {
+  box-shadow: inset 0 0 0 2px currentcolor;
+}
+
+/* "slider" (281:1000): 800 px track with a blue fill and the value tag above the thumb. */
+.slider {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-12);
+  width: min(800px, 100%);
+  padding-top: var(--playloop-space-24);
+}
+
+.sliderValue {
+  position: relative;
+  height: 37px;
+}
+
+.sliderTag {
+  position: absolute;
+  left: var(--slider-fill);
+  transform: translateX(-50%);
+}
+
+.range {
+  width: 100%;
+  height: 16px;
+  margin: 0;
+  border-radius: var(--playloop-radius-8);
+  background: linear-gradient(
+    to right,
+    var(--playloop-accent-blue) var(--slider-fill),
+    var(--playloop-surface-key) var(--slider-fill)
+  );
+  cursor: pointer;
+  appearance: none;
+}
+
+.range::-webkit-slider-thumb {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 25%);
+  appearance: none;
+}
+
+.range::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 25%);
+}
+
+/* Until the reviewer moves it there is no answer, so no fill. */
+.rangeUnset {
+  background: var(--playloop-surface-key);
+}
+
+.sliderScale {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--playloop-space-16);
+  font: var(--playloop-type-caption);
+  color: var(--playloop-text-caption);
+}
+
+.gridWrap {
+  overflow-x: auto;
+}
+
+.gridTable {
+  border-collapse: collapse;
+  font: var(--playloop-type-body-small);
+}
+
+.gridTable th,
+.gridTable td {
+  padding: var(--playloop-space-8) var(--playloop-space-12);
+  text-align: center;
+}
+
+.gridTable th[scope='row'] {
+  text-align: left;
+}
+
+/* ---- Playtest (283:716, 283:1025) ---- */
+
+.gameHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--playloop-space-40);
+}
+
+.gameHeader .stage {
+  flex: 1;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--playloop-space-10);
+}
+
+.pitch {
+  width: 480px;
+  flex-shrink: 0;
+  padding: var(--playloop-space-24) var(--playloop-space-32);
+  border-radius: var(--playloop-radius-20);
+  background: var(--theme-card, var(--playloop-surface-card));
+  font: var(--playloop-type-body);
+  color: var(--playloop-text-body);
+}
+
+.instruction {
+  align-self: flex-start;
+  padding: var(--playloop-space-12) var(--playloop-space-24);
+  border-radius: var(--playloop-radius-20);
+  background: var(--theme-card, var(--playloop-surface-chip));
+  font: var(--playloop-type-heading-3);
+  color: var(--playloop-text-primary);
+}
+
+.missions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--playloop-space-24);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.missions > li > * {
+  max-width: none;
+  height: 100%;
+}
+
+.missionsColumn {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--playloop-space-12);
+}
+
+.playArea {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 400px;
+  gap: var(--playloop-space-32);
+  align-items: start;
+}
+
+.downloadArea {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: var(--playloop-space-24);
+  align-items: start;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-16);
+  min-width: 0;
+}
+
+.side {
+  gap: var(--playloop-space-24);
+}
+
+.game {
+  width: 100%;
+  height: 560px;
+  border: 0;
+  border-radius: var(--playloop-radius-20);
+  background: #000;
+}
+
+.noGame {
+  display: grid;
+  place-items: center;
+  padding: var(--playloop-space-24);
+  background: var(--playloop-surface-card);
+  font: var(--playloop-type-body);
+  text-align: center;
+}
+
+.panel {
+  gap: var(--playloop-space-16);
+  padding: var(--playloop-space-32) var(--playloop-space-28) var(--playloop-space-28);
+}
+
+.missionPanel {
+  gap: var(--playloop-space-16);
+  padding: var(--playloop-space-48) var(--playloop-space-24) var(--playloop-space-40);
+}
+
+.panelTitle {
+  font: var(--playloop-type-heading-2);
+}
+
+.controls {
+  flex-flow: row wrap;
+  background: var(--theme-controls, var(--playloop-surface-card));
+  color: var(--theme-on-controls, var(--playloop-text-primary));
+  align-items: center;
+  gap: var(--playloop-space-12) var(--playloop-space-16);
+  padding: var(--playloop-space-24) var(--playloop-space-32);
+}
+
+.controlsTitle {
+  font: var(--playloop-type-heading-3);
+}
+
+.controlList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--playloop-space-12) var(--playloop-space-16);
+  margin: 0;
+}
+
+.control {
+  display: flex;
+  align-items: center;
+  gap: var(--playloop-space-8);
+}
+
+.control dd {
+  margin: 0;
+  font: var(--playloop-type-caption);
+}
+
+.issues {
+  gap: var(--playloop-space-12);
+  padding: var(--playloop-space-28);
+}
+
+.issuesTitle {
+  font: var(--playloop-type-heading-3);
+}
+
+.issueList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-12);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: var(--playloop-type-body-small);
+  color: var(--playloop-text-body);
+}
+
+.reactionList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-16);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-12);
+  padding-top: var(--playloop-space-16);
+}
+
+.fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-12);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.commentRow {
+  display: flex;
+  align-items: center;
+  gap: var(--playloop-space-12);
+}
+
+.commentRow > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.send {
+  padding: var(--playloop-space-12) var(--playloop-space-24);
+}
+
+.proof {
+  gap: var(--playloop-space-16);
+  padding: var(--playloop-space-32);
+}
+
+.proofHead {
+  padding: var(--playloop-space-16) var(--playloop-space-24);
+  border-radius: var(--playloop-radius-20);
+  background: rgb(203 217 255 / 85%); /* tint/blue at 85%, as on accepted missions */
+  color: var(--playloop-text-link);
+}
+
+.proofTitle {
+  font: var(--playloop-type-card-title);
+}
+
+.proofHint {
+  font: var(--playloop-type-caption);
+  opacity: 0.8;
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--playloop-space-12);
+  min-height: 200px;
+  padding: var(--playloop-space-32);
+  border: 2px dashed var(--playloop-border-glass);
+  border-radius: var(--playloop-radius-20);
+  background: var(--playloop-surface-chip);
+  text-align: center;
+}
+
+.dragging {
+  border-color: var(--playloop-accent-blue);
+}
+
+.dropText {
+  font: var(--playloop-type-heading-3);
+}
+
+.proofImage {
+  max-width: 100%;
+  max-height: 240px;
+  border-radius: var(--playloop-radius-20);
+}
+
+/* "Download the demo" (283:928) */
+.downloadCard {
+  gap: var(--playloop-space-16);
+  padding: var(--playloop-space-40);
+}
+
+.downloads {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-12);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.download {
+  display: flex;
+  align-items: center;
+  gap: var(--playloop-space-24);
+  min-height: 60px;
+  padding: var(--playloop-space-12) var(--playloop-space-16);
+  border-radius: var(--playloop-radius-20);
+  background: var(--playloop-surface-key);
+}
+
+.unavailable {
+  background: var(--playloop-surface-card);
+  color: var(--playloop-text-caption);
+}
+
+.os {
+  width: 96px;
+  flex-shrink: 0;
+  font: var(--playloop-type-button);
+}
+
+.file {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--playloop-space-2);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* ---- Final Verdict (284:868–284:1217) ---- */
+
+.centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--playloop-space-24);
+  min-height: 50vh;
+  text-align: center;
+}
+
+/* Wraps to three lines as in the intro frame (284:896). */
+.introTitle {
+  max-width: 900px;
+}
+
+.farewell {
+  max-width: 600px;
+  margin: 0;
+  padding: var(--playloop-space-24) var(--playloop-space-32);
+  border-radius: var(--playloop-radius-20);
+  background: var(--playloop-surface-card);
+  font: 400 25px / 1.3 var(--playloop-font-mono);
+  color: var(--playloop-text-primary);
+}
+
+.verdictCard {
+  gap: var(--playloop-space-32);
+  padding: var(--playloop-space-48) var(--playloop-space-64);
+}
+
+.verdictQuestion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-12);
+}
+
+.verdictQuestion > :not(h2) {
+  margin-left: var(--playloop-space-24);
+}
+
+/* Orange square before each Final Verdict question. */
+.bulletTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--playloop-space-10);
+  font: var(--playloop-type-heading-3);
+}
+
+.bulletTitle::before {
+  content: '';
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: 0 4px;
+  background: var(--theme-accent-gradient, linear-gradient(90deg, #ff3f00, #ffa082));
+}
+
+.quote {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-8);
+  margin: 0;
+  padding: var(--playloop-space-16) var(--playloop-space-20);
+  border-radius: var(--playloop-radius-20);
+  background: var(--playloop-surface-chip);
+}
+
+.quote blockquote {
+  margin: 0;
+  font: var(--playloop-type-body-small);
+}
+
+.improveRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: var(--playloop-space-16);
+  align-items: start;
+}
+
+/* ---- Summary (285:826) ---- */
+
+.gameTag {
+  align-self: flex-start;
+}
+
+.summarySection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-12);
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--playloop-space-16);
+}
+
+.summaryBody {
+  gap: var(--playloop-space-20);
+  padding: var(--playloop-space-40) 56px;
+}
+
+.answer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.answerText {
+  font: var(--playloop-type-body);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.answerTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--playloop-space-24) var(--playloop-space-32);
+  margin: 0;
+}
+
+.answerTags dd {
+  margin: 6px 0 0;
+}
+
+.summaryCards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-12);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.summaryCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-8);
+  padding: var(--playloop-space-16) var(--playloop-space-20);
+  border-radius: var(--playloop-radius-20);
+  background: var(--playloop-surface-chip);
+  font: var(--playloop-type-body-small);
+}
+
+.summaryCardTop {
+  display: flex;
+  align-items: center;
+  gap: var(--playloop-space-12);
+}
+
+.summaryCardTop > :first-child {
+  flex: 1;
+}
+
+.compare {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-12);
+  margin: 0;
+}
+
+.compare > div {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--playloop-space-12);
+}
+
+.compare dd {
+  margin: 0;
+}
+
+/* ---- Narrower screens (not designed yet) ---- */
+
+@media (max-width: 1000px) {
+  .gameHeader,
+  .playArea,
+  .downloadArea,
+  .improveRow,
+  .compare > div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .gameHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pitch {
+    width: auto;
+  }
+
+  .card,
+  .verdictCard,
+  .summaryBody {
+    padding: var(--playloop-space-48) var(--playloop-space-24) var(--playloop-space-40);
+  }
+}
+
+@media (max-width: 600px) {
+  .flow {
+    padding-inline: 0;
+  }
+
+  .header {
+    padding-inline: var(--playloop-space-16);
+  }
+
+  .questionTitle {
+    font-size: 28px;
+  }
+
+  .game {
+    height: 320px;
+  }
+
+  .commentRow,
+  .download {
+    flex-wrap: wrap;
+  }
+}

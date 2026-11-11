@@ -2,7 +2,7 @@
 
 Reciprocal playtesting platform for indie game developers.
 
-The API is four Node services behind an Nginx gateway: Identity, Community, Notifications and Media. Each service has its own MongoDB database, and everything runs in Docker. The client app is not part of this setup.
+The API is four Node services behind an Nginx gateway: Identity, Community, Notifications and Media. Each service has its own MongoDB database, and everything runs in Docker. The React client in `client/` runs separately with Vite.
 
 ## Requirements
 
@@ -80,6 +80,11 @@ curl.exe http://localhost:4000/api/health
 curl.exe -c cookies.txt -H "Content-Type: application/json" -d "{\"username\":\"ada\",\"email\":\"ada@example.com\",\"password\":\"password123\",\"acceptTerms\":true}" http://localhost:4000/api/auth/register
 curl.exe -b cookies.txt http://localhost:4000/api/me
 ```
+
+## Frontend
+
+The React + Vite client lives in [`client/`](client/README.md). Run it with `npm run dev:client`
+(http://localhost:5173); `/api` is proxied to the gateway on port 4000, so start the API with `npm run dev` first.
 
 ## Deploy to AWS
 

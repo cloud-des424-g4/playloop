@@ -1,0 +1,19 @@
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--playloop-space-24);
+  min-height: var(--playloop-nav-height);
+}
+
+.link {
+  font: var(--playloop-type-nav);
+  color: var(--playloop-text-inverse);
+  text-shadow: var(--playloop-shadow-text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.link:hover {
+  text-decoration: underline;
+}

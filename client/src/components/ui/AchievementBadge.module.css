@@ -1,0 +1,45 @@
+.badge {
+  display: flex;
+  align-items: center;
+  gap: var(--playloop-space-16);
+  min-height: 72px;
+}
+
+.medal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+}
+
+.lime {
+  background: var(--playloop-tint-lime);
+}
+
+.lilac {
+  background: var(--playloop-tint-lilac);
+}
+
+.sunny {
+  background: var(--playloop-tint-sunny);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-8);
+  min-width: 0;
+}
+
+.title {
+  font: var(--playloop-type-card-title);
+  color: var(--playloop-text-primary);
+}
+
+.detail {
+  font: var(--playloop-type-caption);
+  color: var(--playloop-text-caption);
+}

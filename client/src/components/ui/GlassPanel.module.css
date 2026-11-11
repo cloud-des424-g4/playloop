@@ -1,0 +1,17 @@
+.root {
+  border: 1px solid var(--playloop-border-glass);
+  border-radius: var(--playloop-radius-20);
+}
+
+.card {
+  padding: var(--playloop-space-24);
+  background: var(--playloop-surface-card);
+  backdrop-filter: var(--playloop-glass-soft);
+}
+
+.panel {
+  padding: var(--playloop-space-32);
+  background: var(--playloop-surface-frost);
+  backdrop-filter: var(--playloop-glass-panel);
+  box-shadow: var(--playloop-shadow-panel);
+}

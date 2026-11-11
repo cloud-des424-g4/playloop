@@ -1,0 +1,56 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-8);
+  width: 100%;
+}
+
+.label {
+  font: var(--playloop-type-caption);
+  color: var(--playloop-text-caption);
+}
+
+.control {
+  width: 100%;
+  height: 60px;
+  padding: var(--playloop-space-16);
+  border: 1px solid var(--playloop-border-glass);
+  border-radius: var(--playloop-radius-20);
+  background: var(--playloop-surface-chip);
+  backdrop-filter: var(--playloop-glass-frosted);
+  font: var(--playloop-type-body);
+  color: var(--playloop-text-primary);
+}
+
+.controlSm {
+  border-radius: var(--playloop-radius-8);
+}
+
+.control::placeholder {
+  color: var(--playloop-text-caption);
+}
+
+.control:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+textarea.control {
+  height: auto;
+  min-height: 96px;
+  resize: vertical;
+}
+
+/* Help and validation states are not designed yet; these are neutral placeholders. */
+.hint,
+.error {
+  font: var(--playloop-type-caption);
+}
+
+.hint {
+  color: var(--playloop-text-caption);
+}
+
+.error {
+  color: var(--playloop-deep-orange);
+}

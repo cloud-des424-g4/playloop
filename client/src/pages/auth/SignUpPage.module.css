@@ -1,0 +1,43 @@
+/* The username field and the live result of the availability check, 8 px apart like the other
+   hints. When the check has nothing to say the status line is empty and takes no space. */
+.usernameGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-8);
+}
+
+.status {
+  font: var(--playloop-type-caption);
+  color: var(--playloop-text-caption);
+}
+
+.status:empty {
+  margin-top: calc(-1 * var(--playloop-space-8));
+}
+
+/* Same neutral treatment as TextField's `error`; validation styling is not designed yet. */
+.statusError {
+  color: var(--playloop-deep-orange);
+}
+
+/* "Terms agreement": 28 px checkbox, 12 px gap, 40 px row. */
+.terms {
+  display: flex;
+  align-items: center;
+  gap: var(--playloop-space-12);
+  min-height: 40px;
+}
+
+.termsText {
+  font: var(--playloop-type-body-small);
+  color: var(--playloop-text-body);
+}
+
+.termsText label {
+  cursor: pointer;
+}
+
+.termsError {
+  font: var(--playloop-type-caption);
+  color: var(--playloop-deep-orange);
+}

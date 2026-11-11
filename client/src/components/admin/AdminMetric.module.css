@@ -1,0 +1,27 @@
+.metric {
+  display: flex;
+  flex-direction: column;
+  width: 449px;
+  max-width: 100%;
+  min-height: 159px;
+  padding: 18px 36px 17px;
+  border-radius: var(--playloop-radius-20);
+  background: var(--playloop-surface-card);
+}
+
+.label {
+  font: var(--playloop-type-body);
+  color: var(--playloop-text-body);
+}
+
+.value {
+  margin-top: 18px;
+  font: var(--playloop-type-heading-2);
+  color: var(--playloop-deep-blue);
+}
+
+.trend {
+  margin-top: 21px;
+  font: var(--playloop-type-body-small);
+  color: var(--playloop-deep-lime);
+}

@@ -1,0 +1,114 @@
+/*
+ * PlayLoop design tokens.
+ *
+ * Names under "Figma variables" match the PlayLoop / Profile foundations collection one-to-one
+ * (Figma file m8i4PGK6yx0PwGw3aVkSUG). Keep them in sync with Figma instead of renaming.
+ * "Handoff supplements" are values the high-fidelity screens use without a variable yet.
+ */
+
+:root {
+  /* ---- Figma variables: colour ---- */
+  --playloop-accent-blue: #074cfc;
+  --playloop-accent-orange: #fb541b;
+  --playloop-deep-blue: #0536b5;
+
+  --playloop-text-primary: #191923;
+  --playloop-text-body: rgb(25 25 35 / 80%);
+  --playloop-text-caption: rgb(25 25 35 / 65%);
+  --playloop-text-link: #0536b5;
+  --playloop-text-inverse: #ffffff;
+
+  --playloop-tint-blue: #cbd9ff;
+  --playloop-tint-sky: #cdebff;
+  --playloop-tint-lilac: #e3daff;
+  --playloop-tint-lime: #dff4c7;
+  --playloop-tint-sunny: #ffedb5;
+  --playloop-tint-orange: #ffd6c7;
+
+  --playloop-deep-sky: #075e8f;
+  --playloop-deep-lilac: #5937c8;
+  --playloop-deep-lime: #376c0d;
+  --playloop-deep-sunny: #8a5b00;
+  --playloop-deep-orange: #a3300a;
+
+  --playloop-surface-card: rgb(255 255 255 / 40%);
+  --playloop-surface-chip: rgb(255 255 255 / 50%);
+  --playloop-surface-key: rgb(255 255 255 / 80%);
+  --playloop-surface-frost: rgb(217 217 217 / 40%);
+
+  --playloop-border-glass: rgb(255 255 255 / 50%);
+  --playloop-border-ink: rgb(25 25 35 / 15%);
+
+  /* ---- Figma variables: spacing ---- */
+  --playloop-space-2: 2px;
+  --playloop-space-8: 8px;
+  --playloop-space-10: 10px;
+  --playloop-space-12: 12px;
+  --playloop-space-14: 14px;
+  --playloop-space-15: 15px;
+  --playloop-space-16: 16px;
+  --playloop-space-20: 20px;
+  --playloop-space-22: 22px;
+  --playloop-space-24: 24px;
+  --playloop-space-28: 28px;
+  --playloop-space-32: 32px;
+  --playloop-space-38: 38px;
+  --playloop-space-40: 40px;
+  --playloop-space-48: 48px;
+  --playloop-space-64: 64px;
+
+  /* ---- Figma variables: radius ---- */
+  --playloop-radius-8: 8px;
+  --playloop-radius-20: 20px;
+  --playloop-radius-30: 30px;
+  --playloop-radius-32: 32px;
+  --playloop-radius-70: 70px;
+  --playloop-radius-100: 100px; /* Sign up / Log in glass form and artwork leaf */
+
+  /* ---- Handoff supplements: colour ---- */
+  --playloop-tint-pink: #ffd3df; /* "Found a Bug" and Horror tags */
+  --playloop-deep-pink: #b51e4c;
+  --playloop-accent-orange-soft: rgb(251 84 27 / 50%); /* compact button, selected tab, pending */
+  --playloop-border-orange: #ff803c;
+  --playloop-status-resolved: rgb(134 224 89 / 50%);
+  --playloop-gradient-primary: linear-gradient(
+    to right,
+    rgb(251 84 27 / 50%),
+    rgb(255 166 0 / 50%)
+  );
+  --playloop-grid-line: rgb(255 255 255 / 20%);
+
+  /* ---- Typography (Figma text styles) ---- */
+  --playloop-font-mono: 'Kode Mono Variable', 'Kode Mono', ui-monospace, monospace;
+  --playloop-font-display: 'Palette Mosaic', var(--playloop-font-mono);
+
+  /* Use with `font: var(--playloop-type-…)`. */
+  --playloop-type-display: 400 64px / 1.2 var(--playloop-font-display);
+  --playloop-type-heading-1: 400 39px / 1.2 var(--playloop-font-mono);
+  --playloop-type-heading-2: 600 31px / 1.2 var(--playloop-font-mono);
+  --playloop-type-heading-3: 500 25px / 1.2 var(--playloop-font-mono);
+  --playloop-type-card-title: 700 24px / 1.2 var(--playloop-font-mono);
+  --playloop-type-body: 400 19px / 1.5 var(--playloop-font-mono);
+  --playloop-type-body-small: 500 16px / 1.2 var(--playloop-font-mono);
+  --playloop-type-caption: 500 16px / 1.2 var(--playloop-font-mono);
+  --playloop-type-nav: 500 20px / 1.2 var(--playloop-font-mono);
+  --playloop-type-button: 700 20px / 1.2 var(--playloop-font-mono);
+  --playloop-type-tag: 500 18px / normal var(--playloop-font-mono);
+  --playloop-type-key: 600 15px / normal var(--playloop-font-mono);
+
+  /* ---- Effects (Figma effect styles) ---- */
+  /* Figma GLASS has no CSS equivalent. A Figma blur radius is roughly twice the CSS blur value. */
+  --playloop-glass-soft: blur(2px); /* PlayLoop / soft (radius 4) */
+  --playloop-glass-panel: blur(13.5px); /* PlayLoop / panel (radius 27) */
+  --playloop-glass-frosted: blur(50px); /* PlayLoop / frosted (radius 100) */
+  --playloop-shadow-panel: 0 4px 30px rgb(0 0 0 / 25%); /* PlayLoop / panel */
+  --playloop-shadow-text: 0 4px 4px rgb(0 0 0 / 25%); /* PlayLoop / text */
+  --playloop-shadow-title: 0 0 27.1px rgb(0 0 0 / 25%); /* PlayLoop / title */
+  --playloop-shadow-key: 0 2px 0 rgb(0 0 0 / 12%);
+  --playloop-shadow-button-label: 0 4px 4.5px rgb(0 0 0 / 66%);
+
+  /* ---- Layout ---- */
+  --playloop-content-width: 1312px; /* desktop frames are 1512px wide with 100px gutters */
+  --playloop-nav-height: 180px;
+  --playloop-focus-ring: 0 0 0 3px var(--playloop-accent-blue);
+}

@@ -1,0 +1,224 @@
+/* Public profile (Figma 210:225, 210:262) and edit profile (210:300). */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-32);
+  min-width: 0;
+}
+
+.caption {
+  font: var(--playloop-type-caption);
+  color: var(--playloop-text-caption);
+}
+
+/* ---- Tabs panel (224:818) ---- */
+
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-32);
+}
+
+.panelHead {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding-right: 120px;
+}
+
+/* The count sits on the right of the tab row. */
+.count {
+  position: absolute;
+  top: calc(var(--playloop-space-32) + 14px);
+  right: var(--playloop-space-32);
+  font: var(--playloop-type-caption);
+  color: var(--playloop-text-caption);
+}
+
+.games {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr));
+  gap: var(--playloop-space-32);
+  justify-items: center;
+}
+
+.reviews {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-24);
+}
+
+.reviewLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--playloop-space-24);
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--playloop-space-24);
+  margin-top: var(--playloop-space-32);
+}
+
+.empty {
+  padding: var(--playloop-space-48) 0;
+  font: var(--playloop-type-body);
+  color: var(--playloop-text-body);
+  text-align: center;
+}
+
+/* ---- Edit profile ---- */
+
+.editLayout {
+  display: grid;
+  grid-template-columns: 272px minmax(0, 1fr);
+  gap: var(--playloop-space-40);
+  align-items: start;
+}
+
+.photoCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--playloop-space-16);
+  padding: var(--playloop-space-16);
+  border: 1px solid var(--playloop-border-glass);
+  border-radius: var(--playloop-radius-20);
+  background: var(--playloop-surface-card);
+}
+
+.photoHint {
+  font: var(--playloop-type-caption);
+  color: var(--playloop-text-caption);
+  text-align: center;
+}
+
+.formColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-24);
+  min-width: 0;
+}
+
+/* 224:871: leaf panel, top-left and bottom-right corners 100 px. */
+.formPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-24);
+  min-width: 0;
+  margin: 0;
+  padding: var(--playloop-space-32);
+  border: 1px solid var(--playloop-border-glass);
+  border-radius: var(--playloop-radius-100) 0;
+  background: var(--playloop-surface-card);
+}
+
+.nameRow {
+  display: grid;
+  grid-template-columns: minmax(0, 576fr) minmax(0, 336fr);
+  gap: var(--playloop-space-24);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-12);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.group legend {
+  float: left;
+  width: 100%;
+  margin-bottom: var(--playloop-space-12);
+}
+
+.genreRow,
+.platformRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--playloop-space-12);
+}
+
+.platformRow {
+  gap: var(--playloop-space-24);
+}
+
+.platformRow > * {
+  width: 160px;
+}
+
+.removableTag {
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  border-radius: 0 var(--playloop-radius-30);
+  background: none;
+  cursor: pointer;
+}
+
+.addSelect {
+  width: 200px;
+}
+
+.linksTitle {
+  font: var(--playloop-type-heading-3);
+}
+
+.linkRow {
+  display: grid;
+  grid-template-columns: minmax(0, 200px) minmax(0, 1fr) 48px;
+  gap: var(--playloop-space-16);
+  align-items: end;
+}
+
+.addLink {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: var(--playloop-type-button);
+  color: var(--playloop-text-link);
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--playloop-space-16);
+}
+
+@media (max-width: 900px) {
+  .editLayout,
+  .nameRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .photoCard {
+    justify-self: start;
+  }
+
+  .linkRow {
+    grid-template-columns: minmax(0, 1fr) 48px;
+  }
+
+  .linkRow > :first-child {
+    grid-column: 1 / -1;
+  }
+
+  .panelHead {
+    padding-right: 0;
+  }
+
+  .count {
+    position: static;
+  }
+}

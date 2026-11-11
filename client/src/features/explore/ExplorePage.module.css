@@ -1,0 +1,504 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* ---- Hero ---------------------------------------------------------------------------------- */
+
+/* In the 1512 px Figma frame the bubbles, glass blob and lettering span x 65–1377 and y 137–653:
+   1312 × 516 px, exactly the content column. Every offset below is a share of that canvas
+   (a / 1312 across, a / 516 down), so at full width it is the Figma layout pixel for pixel and on
+   narrower screens the composition scales down as one piece. */
+.hero {
+  position: relative;
+  aspect-ratio: 1312 / 516;
+  container-type: inline-size;
+}
+
+/* "Vector 1" (47:252), the glass blob. The lettering is placed relative to it. */
+.art {
+  position: absolute;
+  top: calc(19.58 / 516 * 100%);
+  left: calc(364 / 1312 * 100%);
+  width: calc(948.073 / 1312 * 100%);
+}
+
+.blob {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* "Sky" (47:238), the PLAYLOOP lettering: 940 × 564 px, 9 px right of and 19.58 px above the blob. */
+.lettering {
+  position: absolute;
+  top: calc(-19.58 / 496.416 * 100%);
+  left: calc(9 / 948.073 * 100%);
+  width: calc(940 / 948.073 * 100%);
+  height: auto;
+  pointer-events: none;
+  animation: float 3s infinite alternate;
+}
+
+/* Figma motion on "Sky" (47:238): 26 px bob over 3 s, one easing per half, mirrored on repeat. */
+@keyframes float {
+  0% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.51, -0.009, 0.549, 1);
+  }
+
+  50% {
+    transform: translateY(calc(-26 / 1312 * 100cqw));
+    animation-timing-function: cubic-bezier(0.497, 0.014, 0.532, 1);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lettering {
+    animation: none;
+  }
+}
+
+.tagline,
+.pitch {
+  position: absolute;
+  z-index: 1;
+  color: var(--playloop-text-inverse);
+  text-shadow: var(--playloop-shadow-text);
+}
+
+/* 47:37 */
+.tagline {
+  top: calc(152 / 516 * 100%);
+  left: calc(1108 / 1312 * 100%);
+  font: 500 calc(25 / 1312 * 100cqw) / 1.2 var(--playloop-font-mono);
+  white-space: nowrap;
+}
+
+/* 47:38 */
+.pitch {
+  top: calc(283 / 516 * 100%);
+  left: calc(463 / 1312 * 100%);
+  width: calc(230 / 1312 * 100%);
+  font: 500 calc(20 / 1312 * 100cqw) / 1.2 var(--playloop-font-mono);
+}
+
+/* Covers the canvas so the bubbles can use the same percentages; only the bubbles take clicks. */
+.shortcuts {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Playtest Roulette (47:28) and Publish Game (61:50): 200 px circles with the label 20 px from the
+   top and the artwork below it. The tints have no Figma variable; values are copied from the frame. */
+.bubble {
+  position: absolute;
+  width: calc(200 / 1312 * 100%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  color: var(--playloop-text-inverse);
+  text-decoration: none;
+  pointer-events: auto;
+}
+
+.bubble img {
+  position: absolute;
+  height: auto;
+}
+
+.bubbleLabel {
+  position: absolute;
+  top: 10%;
+  right: 0;
+  left: 0;
+  font: 600 calc(20 / 1312 * 100cqw) / 1.2 var(--playloop-font-mono);
+  text-align: center;
+  text-shadow: 0 0 6px rgb(0 0 0 / 40%);
+}
+
+.roulette {
+  top: calc(68 / 516 * 100%);
+  left: 0;
+  background: rgb(27 95 163 / 20%);
+}
+
+/* "roulette 1" (178:195): 128 px at (37, 63) inside the bubble. */
+.roulette img {
+  top: calc(63 / 200 * 100%);
+  left: calc(37 / 200 * 100%);
+  width: calc(128 / 200 * 100%);
+}
+
+.publish {
+  top: calc(264 / 516 * 100%);
+  left: calc(133 / 1312 * 100%);
+  background: rgb(158 203 91 / 20%);
+}
+
+.publish .bubbleLabel {
+  top: 9.5%;
+}
+
+/* "floppy-refined 1" (178:198): 123 px at (45, 47) inside the bubble. */
+.publish img {
+  top: calc(47 / 200 * 100%);
+  left: calc(45 / 200 * 100%);
+  width: calc(123 / 200 * 100%);
+}
+
+/* ---- Games panel --------------------------------------------------------------------------- */
+
+/* Figma draws the tab, the sort bar and the sidebar as one glass shape ("Union", 178:181) over a
+   second glass rectangle (47:47). Here the panel is that rectangle, and the tab, bar and sidebar
+   add the second layer, so they read darker than the card area as in the frame. */
+/* Figma spans the panel across the whole 1512 px frame, 100 px past the content column on each side.
+   Reach into those gutters (or to the viewport edge when they are narrower) so the three 330 px
+   cards fit as designed. It sits above the shell's column lines so the panel glass blurs them. */
+.browser {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  margin-inline: max(-100px, (100% - 100vw) / 2);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--playloop-space-24);
+}
+
+.gamesTab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(519px, 100%);
+  height: 97px;
+  margin-left: 81px;
+  border-radius: var(--playloop-radius-20) var(--playloop-radius-20) 0 0;
+  background: var(--playloop-surface-frost);
+  backdrop-filter: var(--playloop-glass-panel);
+  box-shadow: var(--playloop-shadow-panel);
+  /* The tab and the panel are one shape in Figma, so neither casts a shadow onto the other. */
+  clip-path: inset(-40px -40px 0);
+  font: var(--playloop-type-display);
+  color: var(--playloop-text-inverse);
+  text-shadow: var(--playloop-shadow-title);
+}
+
+/* Right edge 154 px from the frame edge in Figma; scale that gap with the panel. */
+.search {
+  flex-shrink: 1;
+  margin-right: clamp(0px, 10%, 154px);
+}
+
+.panel {
+  --explore-sidebar: 400px;
+  display: grid;
+  grid-template-columns: var(--explore-sidebar) minmax(0, 1fr);
+  grid-template-areas:
+    'bar bar'
+    'side results';
+  border-radius: var(--playloop-radius-20);
+  background: var(--playloop-surface-frost);
+  backdrop-filter: var(--playloop-glass-panel);
+  box-shadow: var(--playloop-shadow-panel);
+  clip-path: inset(0 -40px -40px);
+}
+
+.bar {
+  display: flex;
+  grid-area: bar;
+  align-items: center;
+  min-height: 97px;
+  padding: var(--playloop-space-16) var(--playloop-space-24) var(--playloop-space-16)
+    var(--explore-sidebar);
+  border-radius: var(--playloop-radius-20) var(--playloop-radius-20) var(--playloop-radius-20) 0;
+  background: var(--playloop-surface-frost);
+}
+
+/* Centred over the cards, 170 px apart at the Figma width (178:185). */
+.tabs {
+  flex: 1;
+  justify-content: center;
+  gap: var(--playloop-space-8) clamp(var(--playloop-space-24), 11vw, 170px);
+  filter: drop-shadow(0 0 5px rgb(0 0 0 / 25%));
+}
+
+/* ---- Sidebar ---- */
+
+.sidebar {
+  display: flex;
+  grid-area: side;
+  flex-direction: column;
+  gap: var(--playloop-space-64);
+  padding: 30px 39px var(--playloop-space-64) 41px;
+  border-radius: 0 0 var(--playloop-radius-20) var(--playloop-radius-20);
+  background: var(--playloop-surface-frost);
+  color: var(--playloop-text-primary);
+}
+
+.sideSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-20);
+}
+
+.categories {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-14);
+}
+
+.sideTitle {
+  font: var(--playloop-type-heading-2);
+}
+
+.recommendations {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-48);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-28);
+}
+
+.groupTitle {
+  font: var(--playloop-type-heading-3);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--playloop-space-8);
+  max-width: 320px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: flex;
+  padding: 0;
+  border: 0;
+  border-radius: 0 var(--playloop-radius-30);
+  background: none;
+  cursor: pointer;
+}
+
+/* A selected state is not designed yet: outline the tag in its own text colour. */
+.chipSelected {
+  box-shadow: inset 0 0 0 2px currentcolor;
+}
+
+.caption {
+  font: var(--playloop-type-caption);
+  color: var(--playloop-text-caption);
+}
+
+/* ---- Results ---- */
+
+/* The cards sit in a grid of glass lines (47:48–47:54, 178:269). Vertical lines start under the
+   bar; each row has a line across its top that runs from the sidebar to the panel edge. */
+.results {
+  --results-lead: 31px;
+  grid-area: results;
+  min-width: 0;
+  padding: 0 21px 0 var(--results-lead);
+  overflow: clip;
+  container: results / inline-size;
+}
+
+.grid {
+  --columns: 3;
+  display: grid;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  padding: 70px 0 var(--playloop-space-24);
+  border-right: 3px solid var(--playloop-grid-line);
+  background: linear-gradient(to right, var(--playloop-grid-line) 3px, transparent 3px) 0 0 /
+    calc(100% / var(--columns)) 100%;
+}
+
+.cell {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+  padding: var(--playloop-space-20) var(--playloop-space-10);
+}
+
+.cell::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: calc(-1 * var(--results-lead));
+  display: none;
+  width: 200vw;
+  height: 3px;
+  background: var(--playloop-grid-line);
+}
+
+.cell:nth-child(3n + 1)::before {
+  display: block;
+}
+
+.wide {
+  grid-column: 1 / -1;
+  display: block;
+}
+
+.clear {
+  margin-top: var(--playloop-space-16);
+}
+
+.results > nav {
+  margin-block: var(--playloop-space-24);
+}
+
+@container results (width < 900px) {
+  .grid {
+    --columns: 2;
+  }
+
+  .cell:nth-child(3n + 1)::before {
+    display: none;
+  }
+
+  .cell:nth-child(2n + 1)::before {
+    display: block;
+  }
+}
+
+@container results (width < 600px) {
+  .grid {
+    --columns: 1;
+  }
+
+  .cell::before {
+    display: block;
+  }
+}
+
+/* ---- Narrower screens (not designed yet) ---------------------------------------------------- */
+
+/* The sidebar moves above the cards. */
+@media (max-width: 1100px) {
+  .panel {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'bar'
+      'side'
+      'results';
+  }
+
+  .bar {
+    padding-left: var(--playloop-space-24);
+    border-radius: var(--playloop-radius-20) var(--playloop-radius-20) 0 0;
+  }
+
+  .sidebar {
+    flex-flow: row wrap;
+    gap: var(--playloop-space-48);
+    padding-bottom: var(--playloop-space-48);
+    border-radius: 0;
+  }
+
+  .sideSection,
+  .categories {
+    flex: 1 1 320px;
+  }
+
+  .results {
+    --results-lead: var(--playloop-space-16);
+    padding-right: var(--playloop-space-16);
+  }
+}
+
+/* The hero stacks: artwork, then the copy, then the two bubbles side by side. */
+@media (max-width: 760px) {
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--playloop-space-24);
+    aspect-ratio: auto;
+  }
+
+  .art,
+  .tagline,
+  .pitch,
+  .shortcuts {
+    position: relative;
+    inset: auto;
+  }
+
+  .art {
+    width: 100%;
+  }
+
+  .tagline {
+    font: var(--playloop-type-heading-3);
+    text-align: center;
+  }
+
+  .pitch {
+    width: auto;
+    max-width: 32ch;
+    font: var(--playloop-type-nav);
+    text-align: center;
+  }
+
+  .shortcuts {
+    display: flex;
+    gap: var(--playloop-space-24);
+    margin-bottom: var(--playloop-space-24);
+  }
+
+  .bubble {
+    position: relative;
+    inset: auto;
+    width: 160px;
+  }
+
+  .bubbleLabel {
+    font-size: 16px;
+  }
+
+  .head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--playloop-space-16);
+  }
+
+  .search {
+    order: -1;
+    margin-right: 0;
+  }
+
+  .gamesTab {
+    align-self: flex-start;
+    width: auto;
+    height: 80px;
+    margin-left: var(--playloop-space-24);
+    padding-inline: var(--playloop-space-32);
+  }
+}

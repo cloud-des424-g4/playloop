@@ -1,0 +1,5 @@
+.link {
+  display: inline-flex;
+  flex-shrink: 0;
+  border-radius: var(--playloop-radius-8);
+}

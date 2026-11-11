@@ -1,0 +1,21 @@
+/* Shapes scale from the source sizes: 70 px leaf at 240 px, 32 px radius at 78 px. */
+.portrait {
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: calc(var(--avatar-size) * 70 / 240) 0;
+}
+
+.initial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  border-radius: calc(var(--avatar-size) * 32 / 78);
+  background: var(--playloop-tint-orange);
+  font: 700 calc(var(--avatar-size) * 24 / 78) / normal var(--playloop-font-mono);
+  color: var(--playloop-deep-orange);
+}

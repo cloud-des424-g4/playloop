@@ -1,0 +1,423 @@
+.page,
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-24);
+  min-width: 0;
+}
+.page {
+  gap: var(--playloop-space-32);
+}
+.title {
+  font: var(--playloop-type-display);
+  color: var(--playloop-text-inverse);
+  text-shadow: var(--playloop-shadow-title);
+  overflow-wrap: anywhere;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--playloop-space-24);
+  min-height: 0;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--playloop-space-12);
+}
+.between {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--playloop-space-16);
+}
+.caption {
+  font: var(--playloop-type-caption);
+  color: var(--playloop-text-caption);
+}
+.error {
+  color: #8c1834;
+  background: var(--playloop-tint-pink);
+  padding: 12px 16px;
+  border-radius: 8px;
+}
+.success {
+  background: var(--playloop-tint-lime);
+  padding: 12px 16px;
+  border-radius: 8px;
+}
+.empty {
+  text-align: center;
+  padding: 64px 24px;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.linkButton {
+  border: 0;
+  padding: 4px;
+  background: transparent;
+  color: var(--playloop-text-link);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.gameGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+.gameCard {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.gameCard h2 {
+  font: var(--playloop-type-card-title);
+}
+.gameCard p {
+  font: var(--playloop-type-body-small);
+}
+.cover {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 70px 0 70px 0;
+  background: var(--playloop-surface-chip);
+}
+.emptyCover {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+.publish {
+  flex: 0 0 180px;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 22px;
+  border: 1px solid var(--playloop-border-glass);
+  border-radius: 50%;
+  background: rgb(140 212 63 / 20%);
+  color: white;
+  text-decoration: none;
+  text-align: center;
+  font: var(--playloop-type-button);
+  text-shadow: var(--playloop-shadow-text);
+}
+.publish img {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+}
+.tabs {
+  flex-wrap: wrap;
+}
+.formPanel {
+  min-width: 0;
+  margin: 0;
+  position: relative;
+  padding: 56px 98px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  background: var(--playloop-surface-card);
+  border: 1px solid var(--playloop-border-glass);
+  border-radius: 20px;
+}
+.formPanel::before,
+.formPanel::after {
+  content: '';
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  height: 20px;
+  background:
+    linear-gradient(90deg, #ff3f00, #ffa082) left / 20px 20px no-repeat,
+    linear-gradient(90deg, #ff3f00, #ffa082) right / 20px 20px no-repeat;
+  pointer-events: none;
+}
+.formPanel::before {
+  top: 20px;
+}
+.formPanel::after {
+  bottom: 20px;
+}
+.question {
+  padding: 32px;
+  border-radius: 20px;
+  background: var(--playloop-surface-chip);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.questionHead {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.questionHead > :last-child {
+  margin-left: auto;
+}
+.remove img {
+  max-width: none;
+}
+.editorRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 160px auto;
+  align-items: end;
+  gap: 16px;
+}
+.issueRow {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+}
+.issueRow > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+.center {
+  display: flex;
+  justify-content: center;
+}
+.options {
+  display: grid;
+  gap: 12px;
+}
+.preview {
+  padding: 16px;
+  border-radius: 20px;
+  background: rgb(255 255 255 / 25%);
+  border: 1px solid var(--playloop-border-glass);
+  color: var(--playloop-text-caption);
+}
+.inbox {
+  display: grid;
+  grid-template-columns: 400px minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+.reviewList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.inboxItem {
+  border: 1px solid transparent;
+  text-align: left;
+  padding: 24px;
+  background: var(--playloop-surface-card);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.inboxItem[aria-pressed='true'] {
+  background: rgb(255 214 199 / 85%);
+  color: var(--playloop-deep-orange);
+}
+.inboxItem h3 {
+  font: var(--playloop-type-card-title);
+}
+.inboxItem p {
+  font: var(--playloop-type-body-small);
+}
+.detail {
+  padding: 48px 56px 56px;
+  border-radius: 0 100px 0 100px;
+  background: var(--playloop-surface-card);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.answerBlock {
+  padding: 24px;
+  border-radius: 20px;
+  background: var(--playloop-surface-chip);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-wrap: anywhere;
+}
+.answerBlock dt {
+  font: var(--playloop-type-caption);
+  color: var(--playloop-text-caption);
+  margin-bottom: 6px;
+}
+.answerBlock dd {
+  white-space: pre-wrap;
+}
+.sectionTitle {
+  font: var(--playloop-type-heading-3);
+}
+.statusButton {
+  background: var(--playloop-surface-chip);
+  border: 2px solid transparent;
+  border-radius: 0 30px;
+  padding: 8px 15px;
+  font: var(--playloop-type-tag);
+}
+.statusButton[aria-pressed='true'] {
+  background: var(--playloop-tint-sunny);
+  border-color: var(--playloop-deep-sunny);
+}
+.gameSummary {
+  display: grid;
+  grid-template-columns: 318px minmax(0, 1fr);
+  gap: 40px;
+  align-items: center;
+}
+.gameSummary > img {
+  width: 318px;
+  height: 291px;
+  object-fit: cover;
+  border-radius: 70px 0;
+}
+.gameSummary h2 {
+  font: var(--playloop-type-heading-1);
+}
+.reviewCard {
+  padding: 32px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.reviewActions {
+  border-top: 1px solid var(--playloop-border-ink);
+  padding-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+}
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 0;
+  background: transparent;
+  border: 0;
+  font: var(--playloop-type-body-small);
+}
+.action[aria-pressed='true'] {
+  color: var(--playloop-deep-blue);
+  text-decoration: underline;
+}
+.action img {
+  max-width: none;
+}
+.reply {
+  padding-block: 20px;
+  border-bottom: 1px solid var(--playloop-border-ink);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.reply p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 1000px) {
+  .inbox {
+    grid-template-columns: 300px minmax(0, 1fr);
+  }
+  .detail {
+    padding: 32px;
+    border-radius: 0 48px;
+  }
+  .formPanel {
+    padding: 56px 32px;
+  }
+  .gameSummary {
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 24px;
+  }
+  .gameSummary > img {
+    width: 240px;
+    height: 240px;
+  }
+}
+@media (max-width: 720px) {
+  .title {
+    font-size: 36px;
+  }
+  .header {
+    align-items: flex-start;
+    min-height: auto;
+  }
+  .publish {
+    flex-basis: 108px;
+    height: 108px;
+    font-size: 14px;
+    padding-top: 12px;
+  }
+  .publish img {
+    width: 58px;
+    height: 58px;
+  }
+  .gameGrid,
+  .inbox,
+  .gameSummary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cover {
+    height: 230px;
+  }
+  .formPanel {
+    padding: 48px 16px;
+  }
+  .question {
+    padding: 20px 16px;
+  }
+  .editorRow {
+    grid-template-columns: minmax(0, 1fr) 80px auto;
+    gap: 8px;
+  }
+  .reviewCard,
+  .detail {
+    padding: 24px;
+  }
+  .gameSummary > img {
+    width: 100%;
+    height: 230px;
+  }
+  .questionHead {
+    gap: 8px;
+  }
+}
+
+.header:has(.publish) {
+  min-height: 180px;
+}
+.stageTag {
+  align-self: flex-start;
+}
+.missionAnswer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.compactReply {
+  display: flex;
+  align-items: end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.compactReply > :first-child {
+  flex: 1;
+  min-width: 180px;
+}

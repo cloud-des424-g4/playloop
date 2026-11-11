@@ -1,0 +1,10 @@
+/* "Password and recovery": the field and the right-aligned recovery link, 12 px apart. */
+.passwordGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--playloop-space-12);
+}
+
+.forgot {
+  align-self: flex-end;
+}

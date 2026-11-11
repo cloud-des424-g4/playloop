@@ -1,0 +1,58 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0 var(--playloop-radius-30);
+  white-space: nowrap;
+}
+
+.md {
+  padding: var(--playloop-space-8) var(--playloop-space-15);
+  font: var(--playloop-type-tag);
+}
+
+/* Compact chip used inside the glass game card. */
+.sm {
+  padding: 4px var(--playloop-space-12);
+  font: 500 13px / normal var(--playloop-font-mono);
+}
+
+.neutral {
+  background: var(--playloop-surface-chip);
+  color: var(--playloop-text-primary);
+}
+
+.blue {
+  background: var(--playloop-tint-blue);
+  color: var(--playloop-deep-blue);
+}
+
+.sky {
+  background: var(--playloop-tint-sky);
+  color: var(--playloop-deep-sky);
+}
+
+.lilac {
+  background: var(--playloop-tint-lilac);
+  color: var(--playloop-deep-lilac);
+}
+
+.lime {
+  background: var(--playloop-tint-lime);
+  color: var(--playloop-deep-lime);
+}
+
+.sunny {
+  background: var(--playloop-tint-sunny);
+  color: var(--playloop-deep-sunny);
+}
+
+.orange {
+  background: var(--playloop-tint-orange);
+  color: var(--playloop-deep-orange);
+}
+
+.pink {
+  background: var(--playloop-tint-pink);
+  color: var(--playloop-deep-pink);
+}

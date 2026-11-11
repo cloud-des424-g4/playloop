@@ -3,5 +3,5 @@ dist/
 coverage/
 .aws-sam/
 package-lock.json
-client/
 .superpowers/
+client/public/mockServiceWorker.js

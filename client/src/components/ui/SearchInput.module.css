@@ -1,0 +1,47 @@
+.search {
+  position: relative;
+  width: min(100%, 452px);
+  height: 44px;
+}
+
+.input {
+  width: 100%;
+  height: 100%;
+  padding: 0 56px 0 76px;
+  border: 0;
+  border-radius: var(--playloop-radius-20);
+  background: var(--playloop-surface-frost);
+  backdrop-filter: var(--playloop-glass-soft);
+  font: var(--playloop-type-nav);
+  color: var(--playloop-text-inverse);
+  text-shadow: 0 0 6px rgb(0 0 0 / 25%);
+  appearance: none;
+}
+
+.input::placeholder {
+  color: var(--playloop-text-inverse);
+  opacity: 1;
+}
+
+.input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+/* The SVG carries its own drop-shadow filter area, so it is larger than the 24 px glyph. */
+.icon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.submit {
+  position: absolute;
+  top: 3px;
+  right: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--playloop-radius-8);
+  background: none;
+}

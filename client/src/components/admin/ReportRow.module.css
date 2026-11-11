@@ -1,0 +1,35 @@
+.row {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  min-height: 170px;
+  padding: 38px 32px 36px;
+  border: 1px solid var(--playloop-border-glass);
+  border-radius: var(--playloop-radius-20);
+  background: var(--playloop-surface-card);
+  backdrop-filter: var(--playloop-glass-soft);
+  color: #000;
+  text-align: left;
+  text-decoration: none;
+}
+
+.selected {
+  border-color: transparent;
+  background: var(--playloop-tint-orange);
+}
+
+.title {
+  font: var(--playloop-type-heading-1);
+}
+
+.metadata {
+  font: var(--playloop-type-body);
+}
+
+.status {
+  position: absolute;
+  top: 14px;
+  right: var(--playloop-space-8);
+}
