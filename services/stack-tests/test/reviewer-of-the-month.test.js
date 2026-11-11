@@ -1,7 +1,8 @@
 import { createHmac } from 'node:crypto';
 import { once } from 'node:events';
 import { createServer } from 'node:http';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
 import request from 'supertest';
 import { createApp, settle } from './stack.js';
 import { Member } from '../../community/src/modules/users/member.model.js';
@@ -21,8 +22,9 @@ const earn = (user, points, createdAt) =>
 const monthBadges = async (user) =>
   (await Member.findById(user._id)).badges.filter((b) => b.key === 'reviewer_of_the_month');
 
-const runMonthlyJob = (signature = createHmac('sha256', 'test-webhook-secret').digest('hex')) =>
-  request(app).post('/api/internal/badges/monthly').set('X-PlayLoop-Signature', signature);
+const runMonthlyJob = (
+  signature = createHmac('sha256', 'test-webhook-secret-0123456789abcdef').digest('hex'),
+) => request(app).post('/api/internal/badges/monthly').set('X-PlayLoop-Signature', signature);
 
 describe('Reviewer of the Month', () => {
   it("goes once to last month's top reviewer, not this month's leader", async () => {
@@ -87,9 +89,16 @@ describe('Reviewer of the Month', () => {
     const api = createServer(app).listen(0);
     await once(api, 'listening');
     process.env.API_URL = `http://127.0.0.1:${api.address().port}`;
+    // The Lambda reads its signing secret from Secrets Manager; answer with the API's secret.
+    process.env.INTERNAL_WEBHOOK_SECRET_ARN = 'test-secret-id';
+    const send = vi
+      .spyOn(SecretsManagerClient.prototype, 'send')
+      .mockResolvedValue({ SecretString: process.env.INTERNAL_WEBHOOK_SECRET });
     try {
       await handler();
     } finally {
+      send.mockRestore();
+      delete process.env.INTERNAL_WEBHOOK_SECRET_ARN;
       api.close();
     }
     expect(await monthBadges(winner)).toHaveLength(1);

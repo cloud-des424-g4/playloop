@@ -11,7 +11,7 @@ const app = createApp();
 const as = (user) => ({ Cookie: authCookie(user) });
 
 function sign(body) {
-  return createHmac('sha256', 'test-webhook-secret').update(body).digest('hex');
+  return createHmac('sha256', 'test-webhook-secret-0123456789abcdef').update(body).digest('hex');
 }
 
 describe('roulette and recommendations', () => {

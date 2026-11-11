@@ -13,7 +13,7 @@ export default defineConfig({
       CLIENT_ORIGIN: 'http://localhost:5173',
       MEDIA_CDN_URL: 'http://media.test',
       PLAY_CDN_URL: 'http://play.test/playloop-local-play',
-      INTERNAL_WEBHOOK_SECRET: 'test-webhook-secret',
+      INTERNAL_WEBHOOK_SECRET: 'test-webhook-secret-0123456789abcdef',
       INTERNAL_SERVICE_SECRET: 'test-service-secret',
     },
   },
