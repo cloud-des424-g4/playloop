@@ -26,6 +26,11 @@ export function MainNavigation({
       <NavLink to={user ? `/users/${user.username}` : '/login'} className={styles.link}>
         {profileLabel}
       </NavLink>
+      {user?.role === 'admin' && (
+        <NavLink to="/admin" className={styles.link}>
+          Admin
+        </NavLink>
+      )}
       <NotificationBell user={user} />
       {!user && (
         <Button as={Link} to="/login">

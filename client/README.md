@@ -53,7 +53,7 @@ client/
     │   ├── profile/          Profile header and badge list
     │   ├── admin/            Admin metric and report row
     │   └── layout/           AppLayout (sky, grid lines, nav) and MainNavigation
-    ├── pages/                Placeholder and not-found pages
+    ├── pages/                Auth and not-found pages
     ├── lib/                  api client, formatting, tag tones, cx helper
     ├── assets/               Brand marks, sky background, icons exported from Figma
     ├── dev/                  Component gallery and its sample images (dev only)
@@ -156,9 +156,9 @@ Requests include credentials, send JSON, and throw `ApiError` (`status`, `code`,
 
 ## Routes
 
-`src/routes.jsx` maps every high-fidelity screen to a placeholder that links to its Figma frame:
-only the admin pages are left. Replace a placeholder's `element` with the real page when it is
-built.
+`src/routes.jsx` maps every high-fidelity screen to its page. The admin area lives under `/admin`
+(`src/features/admin`) with its own sidebar shell, and is shown only to accounts with the admin
+role; the API enforces the role on every admin request.
 
 ## Playtest Roulette
 
@@ -261,7 +261,8 @@ building the components:
   `TextField` and `Textarea` accept `hint` and `error` with neutral placeholder styling.
 - Mobile layouts and breakpoints are not defined. Navigation wraps below 1100 px.
 - `ChoiceChip` uses KoHo in Figma (a legacy exception); it renders in Kode Mono here.
-- Admin screens use a different shell (sidebar and admin header) that is not built yet.
+- The admin Configuration page follows `GET /admin/config` (genres, levels, badges, reputation
+  points), not the Figma frame, whose settings the API doesn't have.
 - The sky background is the rendered 1512 × 1640 frame crop; very tall pages scale it to cover.
 
 ## Developer feedback workspace

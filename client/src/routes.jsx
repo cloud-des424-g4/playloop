@@ -1,7 +1,6 @@
 import { createBrowserRouter } from 'react-router';
 import { AppLayout } from './components/layout/AppLayout.jsx';
 import { NotFoundPage, RouteErrorPage } from './pages/NotFoundPage.jsx';
-import { PlaceholderPage } from './pages/PlaceholderPage.jsx';
 import { ExplorePage } from './features/explore/ExplorePage.jsx';
 import { MyGamesPage } from './features/games/MyGamesPage.jsx';
 import { GamePage } from './features/games/GamePage.jsx';
@@ -15,20 +14,16 @@ import { FeedbackInboxPage } from './features/feedback/FeedbackInboxPage.jsx';
 import { ReviewsPage, PublishedReviewPage } from './features/reviews/ReviewsPage.jsx';
 import { ReviewLayout } from './features/review/ReviewLayout.jsx';
 import { ReviewPage } from './features/review/ReviewPage.jsx';
+import { AdminLayout } from './features/admin/AdminLayout.jsx';
+import { DashboardPage } from './features/admin/DashboardPage.jsx';
+import { ReportDetailPage, ReportQueuePage } from './features/admin/ReportsPage.jsx';
+import { ContentPage } from './features/admin/ContentPage.jsx';
+import { UserDetailPage, UsersPage } from './features/admin/UsersPage.jsx';
+import { FeaturedPage } from './features/admin/FeaturedPage.jsx';
+import { ConfigPage } from './features/admin/ConfigPage.jsx';
 import { AuthNavigation } from './pages/auth/AuthNavigation.jsx';
 import { LogInPage } from './pages/auth/LogInPage.jsx';
 import { SignUpPage } from './pages/auth/SignUpPage.jsx';
-
-// Route map for the high-fidelity screens. Each placeholder names the Figma frame it should be
-// built from; swap the element for the real page when it lands.
-const screens = [
-  { path: 'admin', title: 'Admin: Dashboard', figmaNode: '375:1089' },
-  { path: 'admin/reports', title: 'Admin: Report Queue', figmaNode: '405:1475' },
-  { path: 'admin/moderation', title: 'Admin: Content Moderation', figmaNode: '405:1523' },
-  { path: 'admin/users', title: 'Admin: User Management', figmaNode: '405:1571' },
-  { path: 'admin/featured', title: 'Admin: Feature Games', figmaNode: '410:1481' },
-  { path: 'admin/settings', title: 'Admin: Configuration', figmaNode: '410:1529' },
-];
 
 // Dev-only gallery of every base component with sample content.
 const devRoutes = import.meta.env.DEV
@@ -67,16 +62,32 @@ export const routes = [
     ],
   },
   {
+    // The admin area (Figma 375:1089 onwards) swaps the top navigation for a sidebar.
+    path: 'admin',
+    element: <AdminLayout />,
+    children: [
+      {
+        errorElement: <RouteErrorPage />,
+        children: [
+          { index: true, element: <DashboardPage /> },
+          { path: 'reports', element: <ReportQueuePage /> },
+          { path: 'reports/:reportId', element: <ReportDetailPage /> },
+          { path: 'moderation', element: <ContentPage /> },
+          { path: 'users', element: <UsersPage /> },
+          { path: 'users/:userId', element: <UserDetailPage /> },
+          { path: 'featured', element: <FeaturedPage /> },
+          { path: 'settings', element: <ConfigPage /> },
+        ],
+      },
+    ],
+  },
+  {
     element: <AppLayout />,
     children: [
       {
         // Pathless boundary so errors render inside the shell instead of replacing it.
         errorElement: <RouteErrorPage />,
         children: [
-          ...screens.map(({ title, figmaNode, ...route }) => ({
-            ...route,
-            element: <PlaceholderPage title={title} figmaNode={figmaNode} />,
-          })),
           { index: true, element: <ExplorePage /> },
           { path: 'games/:gameId', element: <GamePage /> },
           { path: 'roulette', element: <RoulettePage /> },
