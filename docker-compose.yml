@@ -38,6 +38,18 @@ x-storage-env: &storage-env
   PLAY_CDN_URL: http://localhost:9000/playloop-local-play
 
 services:
+  # Optional: the production client image. Start it with `docker compose --profile client up`.
+  client:
+    profiles: [client]
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    ports:
+      - '8080:80'
+    depends_on:
+      - gateway
+    restart: unless-stopped
+
   gateway:
     build: services/gateway
     ports:
