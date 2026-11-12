@@ -154,6 +154,27 @@ await api.post('/auth/login', { email, password });
 Requests include credentials, send JSON, and throw `ApiError` (`status`, `code`, `message`,
 `details`) for non-2xx responses, matching the `Error` schema in `docs/api`.
 
+## Docker
+
+`client/Dockerfile` builds the app with Vite and serves it with Nginx on port 80. Build it from the
+repo root, because the client is an npm workspace:
+
+```sh
+docker build -f client/Dockerfile -t playloop-client .
+docker run -p 8080:80 -e API_UPSTREAM=http://host.docker.internal:4000 playloop-client
+```
+
+The container forwards `/api` to `API_UPSTREAM` (default `http://gateway:80`, the gateway in
+`docker-compose.yml`), so the browser stays on one origin and the session cookie works. To run it
+next to the local API stack on http://localhost:8080:
+
+```sh
+docker compose --profile client up --build
+```
+
+`VITE_API_BASE_URL` is a build argument, baked into the bundle. Leave it as `/api` unless the API is
+on another origin.
+
 ## Routes
 
 `src/routes.jsx` maps every high-fidelity screen to its page. The admin area lives under `/admin`
