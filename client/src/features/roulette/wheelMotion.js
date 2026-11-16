@@ -1,4 +1,4 @@
-// The eight wedges painted on the wheel artwork, clockwise from the one under the pointer.
+// The eight wedges drawn on the wheel, clockwise from the one under the pointer.
 export const WEDGES = [
   'action',
   'adventure',
