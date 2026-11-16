@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useLocation, useParams } from 'react-router';
 import { Button, GlassPanel, Select, Tag } from '../../components/index.js';
 import { api } from '../../lib/api.js';
 import {
@@ -93,10 +93,22 @@ function GameSummary({ game, total }) {
     </GlassPanel>
   );
 }
-function CommunityReview({ initial, expanded = false }) {
+// One review card. In the list (`standalone` false) the Discussion action opens the review's own
+// page at its Discussion section. On that page (`standalone`) the full review starts open and the
+// Discussion is always shown as a separate section below the card, never toggled.
+function CommunityReview({ initial, standalone = false }) {
   const [review, setReview] = useState(initial);
-  const [showDetails, setShowDetails] = useState(expanded);
-  const [showDiscussion, setShowDiscussion] = useState(expanded);
+  const [showDetails, setShowDetails] = useState(standalone);
+  const discussionRef = useRef(null);
+  const { hash } = useLocation();
+  const toDiscussion = () => {
+    discussionRef.current?.scrollIntoView?.({ behavior: 'smooth' });
+    discussionRef.current?.focus({ preventScroll: true });
+  };
+  // Arriving from a list's Discussion link (/reviews/:id#discussion) lands on the section.
+  useEffect(() => {
+    if (standalone && hash === '#discussion') discussionRef.current?.scrollIntoView?.();
+  }, [standalone, hash]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const detail = useResource(showDetails && !review.form ? `/reviews/${review.id}` : null);
@@ -153,14 +165,17 @@ function CommunityReview({ initial, expanded = false }) {
             <img src={down} alt="" />
             Not Helpful ({review.notHelpfulCount})
           </button>
-          <button
-            className={styles.action}
-            aria-expanded={showDiscussion}
-            onClick={() => setShowDiscussion(!showDiscussion)}
-          >
-            <img src={discussion} alt="" />
-            Discussion
-          </button>
+          {standalone ? (
+            <button className={styles.action} onClick={toDiscussion}>
+              <img src={discussion} alt="" />
+              Discussion ({review.replyCount})
+            </button>
+          ) : (
+            <Link className={styles.action} to={`/reviews/${review.id}#discussion`}>
+              <img src={discussion} alt="" />
+              Discussion ({review.replyCount})
+            </Link>
+          )}
           <Button
             variant="glass"
             aria-expanded={showDetails}
@@ -182,9 +197,12 @@ function CommunityReview({ initial, expanded = false }) {
           </RequestState>
         )}
       </GlassPanel>
-      {showDiscussion && (
+      {standalone && (
         <Discussion
           key={review.id}
+          ref={discussionRef}
+          id="discussion"
+          className={styles.discussionSection}
           reviewId={review.id}
           onReply={() =>
             setReview((current) => ({ ...current, replyCount: current.replyCount + 1 }))
@@ -205,7 +223,7 @@ export function PublishedReviewPage() {
           <>
             <GameSummary game={resource.data.game} />
             <Link to={`/games/${resource.data.game.id}/reviews`}>See all reviews</Link>
-            <CommunityReview key={reviewId} initial={resource.data} expanded />
+            <CommunityReview key={reviewId} initial={resource.data} standalone />
           </>
         )}
       </RequestState>

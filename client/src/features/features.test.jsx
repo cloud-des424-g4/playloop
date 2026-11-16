@@ -6,7 +6,7 @@ import { api } from '../lib/api.js';
 import { MyGamesPage } from './games/MyGamesPage.jsx';
 import { FormBuilderPage } from './forms/FormBuilderPage.jsx';
 import { FeedbackInboxPage } from './feedback/FeedbackInboxPage.jsx';
-import { ReviewsPage } from './reviews/ReviewsPage.jsx';
+import { PublishedReviewPage, ReviewsPage } from './reviews/ReviewsPage.jsx';
 import { NotificationBell } from './notifications/NotificationBell.jsx';
 import { changeType, formPayload, validateForm } from './forms/formModel.js';
 import {
@@ -146,7 +146,19 @@ it('votes, removes a vote, and posts a trimmed discussion reply', async () => {
   );
   await u.click(screen.getByRole('button', { name: 'Helpful (19)', exact: true }));
   expect(api.delete).toHaveBeenCalledWith('/reviews/review-1/vote');
-  await u.click(screen.getByRole('button', { name: 'Discussion', exact: true }));
+  // In the list, Discussion opens the review's own page at its Discussion section.
+  expect(screen.getByRole('link', { name: /^Discussion \(\d+\)$/ })).toHaveAttribute(
+    'href',
+    '/reviews/review-1#discussion',
+  );
+  expect(screen.queryByLabelText('Write a comment')).not.toBeInTheDocument();
+  cleanup();
+  // On the review's page the Discussion is its own section, shown without pressing anything.
+  mount(<PublishedReviewPage />, '/reviews/review-1', '/reviews/:reviewId');
+  expect(await screen.findByRole('region', { name: 'Discussion' })).toHaveAttribute(
+    'id',
+    'discussion',
+  );
   await u.type(screen.getByLabelText('Write a comment'), '  Great update!  ');
   await u.click(screen.getByRole('button', { name: 'Post Comment' }));
   expect(api.post).toHaveBeenCalledWith('/reviews/review-1/replies', { body: 'Great update!' });
@@ -155,9 +167,8 @@ it('votes, removes a vote, and posts a trimmed discussion reply', async () => {
 it('keeps an unsent reply when the server rejects it', async () => {
   const u = userEvent.setup();
   api.post.mockRejectedValue(new Error('Please try again'));
-  mount(<ReviewsPage />, '/games/game-1/reviews', '/games/:gameId/reviews');
-  await u.click(await screen.findByRole('button', { name: 'Discussion', exact: true }));
-  await u.type(screen.getByLabelText('Write a comment'), 'My feedback');
+  mount(<PublishedReviewPage />, '/reviews/review-1', '/reviews/:reviewId');
+  await u.type(await screen.findByLabelText('Write a comment'), 'My feedback');
   await u.click(screen.getByRole('button', { name: 'Post Comment' }));
   expect(await screen.findByRole('alert')).toHaveTextContent('Please try again');
   expect(screen.getByLabelText('Write a comment')).toHaveValue('My feedback');
