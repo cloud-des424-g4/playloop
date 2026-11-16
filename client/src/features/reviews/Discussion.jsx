@@ -8,6 +8,7 @@ import {
   TextField,
 } from '../../components/index.js';
 import { api } from '../../lib/api.js';
+import { cx } from '../../lib/cx.js';
 import { Pagination, RequestState, Reviewer } from '../shared/FeatureUI.jsx';
 import { date, nameOf } from '../shared/format.js';
 import { useResource } from '../shared/useResource.js';
@@ -15,7 +16,7 @@ import heart from '../../assets/icons/heart.svg';
 import replyIcon from '../../assets/features/reply.svg';
 import styles from '../shared/Features.module.css';
 
-export function Discussion({ reviewId, onReply, compact = false }) {
+export function Discussion({ reviewId, onReply, compact = false, id, className, ref }) {
   const [page, setPage] = useState(1);
   const resource = useResource(`/reviews/${reviewId}/replies?page=${page}&limit=20`);
   const [body, setBody] = useState('');
@@ -41,7 +42,13 @@ export function Discussion({ reviewId, onReply, compact = false }) {
     }
   }
   return (
-    <section className={styles.stack} aria-label="Discussion">
+    <section
+      ref={ref}
+      id={id}
+      tabIndex={id ? -1 : undefined}
+      className={cx(styles.stack, className)}
+      aria-label="Discussion"
+    >
       <h2 className={styles.sectionTitle}>Discussion</h2>
       <RequestState resource={resource}>
         <GlassPanel className={compact ? styles.compactDiscussion : undefined}>

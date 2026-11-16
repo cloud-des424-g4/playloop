@@ -317,6 +317,23 @@
   color: var(--playloop-deep-blue);
   text-decoration: underline;
 }
+.action:any-link {
+  color: inherit;
+  text-decoration: none;
+}
+.action:any-link:hover {
+  text-decoration: underline;
+}
+/* Discussion on a review's own page: a separate section, set apart from the review card. */
+.discussionSection {
+  margin-top: var(--playloop-space-24);
+  padding-top: var(--playloop-space-32);
+  border-top: 1px solid var(--playloop-border-glass);
+  scroll-margin-top: var(--playloop-space-24);
+}
+.discussionSection:focus {
+  outline: none;
+}
 .action img {
   max-width: none;
 }
