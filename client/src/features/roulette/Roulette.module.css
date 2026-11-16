@@ -66,9 +66,39 @@
   filter: blur(14px);
 }
 
+.wedge {
+  stroke: #fff;
+  stroke-width: 5;
+  stroke-linejoin: round;
+}
+
+.wedgeIcon {
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.wedgeLabel {
+  font: 700 38px / 1 var(--playloop-font-mono);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+/* A soft inner edge and a still highlight over the turning disc, so it reads as one glossy plate. */
+.faceEdge {
+  fill: none;
+  stroke: rgb(13 20 60 / 14%);
+  stroke-width: 10;
+}
+
+.gloss {
+  pointer-events: none;
+}
+
 .peg {
-  fill: #fff;
-  stroke: #e9b987;
+  fill: var(--playloop-accent-orange);
+  stroke: #fff;
   stroke-width: 3;
 }
 
