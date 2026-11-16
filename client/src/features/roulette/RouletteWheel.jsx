@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import art from '../../assets/roulette/wheel.png';
 import styles from './Roulette.module.css';
 import { instantMotion, WEDGES } from './wheelMotion.js';
 
 const STEP = 360 / WEDGES.length;
 
-// Geometry in the artwork's own pixels (wheel.png is 1244 × 1210). The painted pointer and "SPIN"
-// hub are part of the picture, so the disc is clipped inside the pointer's tip and the rim, pointer
-// and hub are drawn here instead: that way the disc can turn while they stay still.
+// Everything is drawn here as vector shapes, in a 1000 × 1085 box around the wheel's centre: the
+// disc turns, while the pointer and the SPIN hub stay still.
 const CX = 620;
 const CY = 596;
 const FACE = 438;
@@ -15,6 +13,54 @@ const RIM = 458;
 const HUB = 152;
 const PEG = RIM;
 const VIEW = `${CX - 500} ${CY - 575} 1000 1085`;
+
+// How each wedge is drawn: its colours from the hub out to the rim, the colour of its label, and a
+// 24 × 24 line icon.
+const ART = {
+  action: {
+    label: 'Action',
+    fill: ['#ff9a6b', '#ee4a1f'],
+    icon: 'M4 4 20 20M20 4 4 20M3 8.5 8.5 3M15.5 3 21 8.5',
+  },
+  adventure: {
+    label: 'Adventure',
+    fill: ['#6fd0ff', '#1787dc'],
+    icon: 'M2 20 9 7l4 7 3-4 6 10Z',
+  },
+  fantasy: {
+    label: 'Fantasy',
+    fill: ['#bfa6ff', '#7446e0'],
+    icon: 'M12 3l2 7 7 2-7 2-2 7-2-7-7-2 7-2Z',
+  },
+  horror: {
+    label: 'Horror',
+    fill: ['#ff8fba', '#d62a70'],
+    icon: 'M6 21V10a6 6 0 0 1 12 0v11l-3-2-3 2-3-2ZM9.5 10.5v1M14.5 10.5v1',
+  },
+  racing: {
+    label: 'Racing',
+    fill: ['#ffe07a', '#f5a800'],
+    ink: '#1d2340',
+    icon: 'M5 3v18M5 4h14l-3 4.5 3 4.5H5',
+  },
+  rpg: {
+    label: 'RPG',
+    fill: ['#6f95ff', '#0d47e0'],
+    icon: 'M12 3l8 3v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6Z',
+  },
+  shooter: {
+    label: 'Shooter',
+    fill: ['#5f6aa3', '#232a55'],
+    icon: 'M19 12a7 7 0 1 1-14 0 7 7 0 0 1 14 0ZM12 2v5M12 17v5M2 12h5M17 12h5',
+  },
+  survival: {
+    label: 'Survival',
+    fill: ['#b4ec6a', '#5cb81f'],
+    ink: '#1d2340',
+    icon: 'M3 20 12 4l9 16ZM12 20v-6',
+  },
+};
+const ICON = 78;
 
 const CRUISE = 540; // degrees per second while waiting for the API
 const MIN_CRUISE_MS = 700;
@@ -127,17 +173,31 @@ export function RouletteWheel({ spinning, landing, onSettled }) {
   return (
     <svg className={styles.wheel} viewBox={VIEW} aria-hidden="true">
       <defs>
-        <clipPath id="roulette-face">
-          <circle cx={CX} cy={CY} r={FACE} />
-        </clipPath>
+        {WEDGES.map((wedge) => (
+          <radialGradient
+            key={wedge}
+            id={`roulette-${wedge}`}
+            gradientUnits="userSpaceOnUse"
+            cx={CX}
+            cy={CY}
+            r={FACE}
+          >
+            <stop offset="0.3" stopColor={ART[wedge].fill[0]} />
+            <stop offset="1" stopColor={ART[wedge].fill[1]} />
+          </radialGradient>
+        ))}
         <radialGradient id="roulette-hub" cx="0.38" cy="0.3" r="0.8">
           <stop offset="0" stopColor="#ff9a52" />
           <stop offset="0.55" stopColor="#fb541b" />
           <stop offset="1" stopColor="#d93a06" />
         </radialGradient>
         <linearGradient id="roulette-rim" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#fff6e6" />
-          <stop offset="1" stopColor="#f6cfa0" />
+          <stop offset="0" stopColor="#ffffff" />
+          <stop offset="1" stopColor="#dfe6fb" />
+        </linearGradient>
+        <linearGradient id="roulette-gloss" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fff" stopOpacity="0.28" />
+          <stop offset="0.55" stopColor="#fff" stopOpacity="0" />
         </linearGradient>
       </defs>
 
@@ -145,14 +205,32 @@ export function RouletteWheel({ spinning, landing, onSettled }) {
 
       <g ref={disc} className={styles.disc}>
         <circle cx={CX} cy={CY} r={RIM} fill="url(#roulette-rim)" />
-        <image href={art} x={0} y={0} width={1244} height={1210} clipPath="url(#roulette-face)" />
-        <circle cx={CX} cy={CY} r={FACE} fill="none" stroke="#fff" strokeWidth={5} />
+        {WEDGES.map((wedge, i) => {
+          const { label, ink = '#fff', icon } = ART[wedge];
+          return (
+            <g key={wedge} transform={`rotate(${i * STEP} ${CX} ${CY})`}>
+              <path className={styles.wedge} d={wedgePath(0)} fill={`url(#roulette-${wedge})`} />
+              <path
+                className={styles.wedgeIcon}
+                d={icon}
+                stroke={ink}
+                transform={`translate(${CX - ICON / 2} ${CY - 250 - ICON / 2}) scale(${ICON / 24})`}
+              />
+              <text className={styles.wedgeLabel} x={CX} y={CY - 345} fill={ink}>
+                {label}
+              </text>
+            </g>
+          );
+        })}
+        <circle className={styles.faceEdge} cx={CX} cy={CY} r={FACE - 5} />
         {highlighted !== null && <path className={styles.winner} d={wedgePath(highlighted)} />}
         {WEDGES.map((wedge, i) => {
           const [x, y] = polar(PEG, i * STEP + STEP / 2);
-          return <circle key={wedge} className={styles.peg} cx={x} cy={y} r={11} />;
+          return <circle key={wedge} className={styles.peg} cx={x} cy={y} r={10} />;
         })}
       </g>
+
+      <circle className={styles.gloss} cx={CX} cy={CY} r={FACE} fill="url(#roulette-gloss)" />
 
       <g className={styles.hub}>
         <circle cx={CX} cy={CY} r={HUB + 10} fill="#fff" />
