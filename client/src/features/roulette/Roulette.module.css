@@ -47,17 +47,84 @@
   cursor: pointer;
 }
 
-/* The artwork includes the pointer, so it turns two full rounds per spin and ends upright. */
+/* RouletteWheel.jsx: the disc turns under a fixed pointer and hub. Its angle is set from script. */
 .wheel {
   display: block;
   width: 100%;
   height: auto;
-  transform: rotate(calc(var(--turns) * 720deg));
-  transition: transform 1.4s cubic-bezier(0.17, 0.67, 0.2, 1);
+  overflow: visible;
+  filter: drop-shadow(0 10px 18px rgb(20 40 90 / 28%));
+}
+
+.disc {
+  transform-origin: 620px 596px;
+  will-change: transform;
+}
+
+.wheelShadow {
+  fill: rgb(20 40 90 / 22%);
+  filter: blur(14px);
+}
+
+.peg {
+  fill: #fff;
+  stroke: #e9b987;
+  stroke-width: 3;
+}
+
+/* The pointer hangs from its round head, so a passing peg swings its tip aside. */
+.pointer {
+  transform-origin: 620px 82px;
+}
+
+.hub {
+  transform-origin: 620px 596px;
+  transition: transform 0.2s ease;
+}
+
+.hubText {
+  fill: #fff;
+  font: 700 92px / 1 var(--playloop-font-mono);
+  letter-spacing: 2px;
+}
+
+.wheelButton:not(:disabled):hover .hub {
+  transform: scale(1.06);
+}
+
+.wheelButton:not(:disabled):active .hub {
+  transform: scale(0.96);
+}
+
+.wheelButton:disabled {
+  cursor: progress;
+}
+
+/* The wedge the wheel stopped on. */
+.winner {
+  fill: rgb(255 255 255 / 30%);
+  stroke: #fff;
+  stroke-width: 12;
+  stroke-linejoin: round;
+  animation: winner 0.45s ease-in-out infinite alternate;
+}
+
+@keyframes winner {
+  from {
+    opacity: 0.25;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wheel {
+  .winner {
+    animation: none;
+  }
+
+  .hub {
     transition: none;
   }
 }
