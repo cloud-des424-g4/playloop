@@ -1,7 +1,6 @@
-import { useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { Button, ChoiceChip, GameCard, PrimaryButton, Tag } from '../../components/index.js';
-import wheel from '../../assets/roulette/wheel.png';
 import infoIcon from '../../assets/icons/info.svg';
 import { api } from '../../lib/api.js';
 import { cx } from '../../lib/cx.js';
@@ -11,6 +10,8 @@ import { cardTags, platformText } from '../games/gameLabels.js';
 import featureStyles from '../shared/Features.module.css';
 import { useResource } from '../shared/useResource.js';
 import styles from './Roulette.module.css';
+import { RouletteWheel } from './RouletteWheel.jsx';
+import { instantMotion } from './wheelMotion.js';
 
 // Minutes the reviewer has (RouletteTime in docs/api enums.yaml).
 const TIMES = [
@@ -18,12 +19,11 @@ const TIMES = [
   [30, 'Up to 30 min'],
   [60, 'Up to 1 hour'],
 ];
-// The wheel turns at least this long, even when the API answers sooner.
-const SPIN_MS = 1400;
-const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+// How long the wheel rests on its wedge before the picked game is shown.
+const HOLD_MS = 900;
 
 // Playtest Roulette. Figma: "Roulette preferences" (356:1636) and "Roulette result" (356:1690).
-// POST /roulette/spin picks the game; the wheel only spins for show.
+// POST /roulette/spin picks the game; the wheel then stops on that game's genre.
 export function RoulettePage() {
   const navigate = useNavigate();
   const meta = useResource('/meta');
@@ -36,96 +36,131 @@ export function RoulettePage() {
   });
   const [result, setResult] = useState(null);
   const [seen, setSeen] = useState([]);
-  const [spinning, setSpinning] = useState(false);
-  const [turns, setTurns] = useState(0);
+  // 'spinning' covers the wheel's whole turn, 'starting' the accept request.
+  const [phase, setPhase] = useState('idle');
+  // Where the wheel should stop, once the API has answered: { genres } (null genres on an error).
+  const [landing, setLanding] = useState(null);
   const [error, setError] = useState(null);
+  const outcome = useRef(null);
+  const holdTimer = useRef(null);
+  const busy = phase !== 'idle';
+
+  useEffect(() => () => clearTimeout(holdTimer.current), []);
 
   async function spin(exclude = seen) {
-    setSpinning(true);
-    setTurns((n) => n + 1);
+    setPhase('spinning');
+    setLanding(null);
     setError(null);
     try {
-      const [spun] = await Promise.all([
-        api.post('/roulette/spin', {
-          ...(prefs.genres.length && { genres: prefs.genres }),
-          ...(prefs.platform && { platform: prefs.platform }),
-          ...(prefs.buildStage && { buildStage: prefs.buildStage }),
-          ...(prefs.maxMinutes && { maxMinutes: prefs.maxMinutes }),
-          ...(exclude.length && { exclude }),
-        }),
-        wait(SPIN_MS),
-      ]);
-      setResult(spun);
-      setSeen([...exclude, spun.game.id]);
+      const spun = await api.post('/roulette/spin', {
+        ...(prefs.genres.length && { genres: prefs.genres }),
+        ...(prefs.platform && { platform: prefs.platform }),
+        ...(prefs.buildStage && { buildStage: prefs.buildStage }),
+        ...(prefs.maxMinutes && { maxMinutes: prefs.maxMinutes }),
+        ...(exclude.length && { exclude }),
+      });
+      outcome.current = { spun, exclude };
+      setLanding({ genres: spun.game.genres });
     } catch (err) {
-      setError(err);
-    } finally {
-      setSpinning(false);
+      outcome.current = { error: err };
+      setLanding({ genres: null });
     }
   }
 
+  // The wheel has stopped: show what the spin returned.
+  function settled() {
+    const { spun, exclude, error: failure } = outcome.current;
+    const finish = () => {
+      if (failure) {
+        setError(failure);
+      } else {
+        setResult(spun);
+        setSeen([...exclude, spun.game.id]);
+      }
+      setLanding(null);
+      setPhase('idle');
+    };
+    if (failure || instantMotion()) finish();
+    else holdTimer.current = setTimeout(finish, HOLD_MS);
+  }
+
   async function start() {
-    setSpinning(true);
+    setPhase('starting');
     setError(null);
     try {
       await api.post('/roulette/accept', { spinToken: result.spinToken });
       navigate(`/games/${result.game.id}/review`);
     } catch (err) {
       setError(err);
-      setSpinning(false);
+      setPhase('idle');
     }
   }
+
+  // The wheel is on screen until a game is picked, and again while spinning for another one.
+  const showWheel = !result || phase === 'spinning';
 
   return (
     <div className={styles.page}>
       <div className={styles.intro}>
         <h1 className={featureStyles.title}>PLAYTEST ROULETTE</h1>
       </div>
-      {result ? (
-        <Result
-          result={result}
-          busy={spinning}
-          error={error}
-          onStart={start}
-          onSpinAgain={() => spin()}
-          onChange={() => {
-            setResult(null);
-            setError(null);
-          }}
-        />
-      ) : (
-        <div className={styles.layout}>
+      <div className={styles.layout}>
+        {showWheel ? (
           <div className={styles.wheelColumn}>
-            <p className={styles.lead}>
-              Pick what you’re in the mood for, then spin. We’ll choose a game for you to playtest.
-            </p>
+            {!result && (
+              <p className={styles.lead}>
+                Pick what you’re in the mood for, then spin. We’ll choose a game for you to
+                playtest.
+              </p>
+            )}
             <button
               type="button"
               className={styles.wheelButton}
               aria-label="Spin the wheel"
-              disabled={spinning}
+              disabled={busy}
               onClick={() => spin()}
             >
-              <img
-                src={wheel}
-                alt=""
-                width={622}
-                height={605}
-                className={styles.wheel}
-                style={{ '--turns': turns }}
+              <RouletteWheel
+                spinning={phase === 'spinning'}
+                landing={landing}
+                onSettled={settled}
               />
             </button>
           </div>
+        ) : (
+          <GameCard
+            className={styles.resultCard}
+            title={result.game.title}
+            description={result.game.pitch}
+            coverSrc={result.game.coverUrl ?? undefined}
+            coverAlt={`${result.game.title} cover`}
+            tags={cardTags(result.game)}
+          />
+        )}
+        {result ? (
+          <ResultPanel
+            result={result}
+            busy={busy}
+            spinning={phase === 'spinning'}
+            error={error}
+            onStart={start}
+            onSpinAgain={() => spin()}
+            onChange={() => {
+              setResult(null);
+              setError(null);
+            }}
+          />
+        ) : (
           <Preferences
             options={options}
             prefs={prefs}
             onChange={setPrefs}
-            busy={spinning}
+            busy={busy}
             error={error}
             onSpin={() => spin([])}
           />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
@@ -226,19 +261,11 @@ function SpinError({ error }) {
   );
 }
 
-function Result({ result, busy, error, onStart, onSpinAgain, onChange }) {
+function ResultPanel({ result, busy, spinning, error, onStart, onSpinAgain, onChange }) {
   const { game } = result;
   const owner = game.owner?.displayName || game.owner?.username;
   return (
-    <div className={styles.layout}>
-      <GameCard
-        className={styles.resultCard}
-        title={game.title}
-        description={game.pitch}
-        coverSrc={game.coverUrl ?? undefined}
-        coverAlt={`${game.title} cover`}
-        tags={cardTags(game)}
-      />
+    <>
       <section className={cx(styles.panel, styles.resultPanel)} aria-labelledby="roulette-game">
         <h2 id="roulette-game" className={styles.gameTitle}>
           {game.title}
@@ -269,13 +296,13 @@ function Result({ result, busy, error, onStart, onSpinAgain, onChange }) {
             Start playtest
           </PrimaryButton>
           <Button variant="glass" className={styles.again} disabled={busy} onClick={onSpinAgain}>
-            {busy ? 'Spinning…' : 'Spin again'}
+            {spinning ? 'Spinning…' : 'Spin again'}
           </Button>
         </div>
-        <button type="button" className={styles.change} onClick={onChange}>
+        <button type="button" className={styles.change} disabled={busy} onClick={onChange}>
           Change preferences
         </button>
       </section>
-    </div>
+    </>
   );
 }
